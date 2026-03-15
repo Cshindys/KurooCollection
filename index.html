@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>黒尾鉄朗 コレクション (黑尾鐵朗 收藏)</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@400;600;700&display=swap');
+
+    :root {
+      --bg:       #fdf6ee;
+      --panel:    #fff8f0;
+      --card:     rgba(255,255,255,0.92);
+      --border:   rgba(180,120,80,0.18);
+      --accent:   #c8102e;
+      --accent2:  #e84a6a;
+      --gold:     #b8860b;
+      --silver:   #6b7f99;
+      --text:     #2a1a0e;
+      --muted:    #8a7060;
+      --nekoma:   #8b0000;
+      --nekoma2:  #cc0000;
+      --wishlist: #7b2d8b;
+      --wish2:    #b44dcc;
+      --warm1:    #fff1e0;
+      --warm2:    #ffe4c0;
+      --warm3:    #ffd6a0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Language Display Logic ── */
+    body[data-lang="ja"] .zh { display: none !important; }
+    body[data-lang="zh"] .ja { display: none !important; }
+
+    .bg-fx {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 30%, rgba(255,180,100,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 90% 10%, rgba(255,140,160,0.10) 0%, transparent 70%);
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(180,120,60,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(180,120,60,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ══════════════════════════════
+       ナビゲーション (Navigation)
+    ══════════════════════════════ */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(255,248,240,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 16px rgba(180,100,60,0.08);
+    }
+
+    .nav-logo { display: flex; align-items: center; gap: 0.8rem; }
+
+    .logo-mark {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--nekoma));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; color: #fff;
+      box-shadow: 0 0 16px rgba(200,16,46,0.25);
+    }
+
+    .logo-text {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1.1rem; font-weight: 700;
+      background: linear-gradient(90deg, #2a1a0e, #8b0000);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-sub {
+      font-size: 0.65rem; color: var(--muted);
+      display: block; margin-top: -4px; font-weight: 400;
+      -webkit-text-fill-color: var(--muted);
+    }
+
+    .nav-tabs { display: flex; gap: 4px; align-items: center; }
+
+    .nav-tab {
+      background: none; border: none;
+      color: var(--muted); font-family: inherit; font-size: 0.88rem;
+      padding: 0.45rem 1rem; border-radius: 8px; cursor: pointer;
+      transition: all .2s; position: relative;
+    }
+
+    .nav-tab::after {
+      content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 0; height: 2px; background: var(--accent); border-radius: 2px; transition: width .25s;
+    }
+
+    .nav-tab:hover { color: var(--text); background: rgba(180,80,60,0.07); }
+    .nav-tab.active { color: var(--accent); font-weight: 600; }
+    .nav-tab.active::after { width: 70%; }
+
+    .lang-btn {
+      background: var(--warm1); border: 1px solid var(--border);
+      color: var(--text); font-family: inherit; font-size: 0.8rem; font-weight: 600;
+      padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer;
+      margin-left: 0.8rem; transition: all .2s;
+    }
+    .lang-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--warm2); }
+
+    .page { display: none; position: relative; z-index: 1; }
+    .page.active { display: block; }
+
+    /* ══════════════════════════════
+       ★ HERO BANNER
+    ══════════════════════════════ */
+    .hero-banner {
+      position: relative; width: 100%; height: 520px;
+      overflow: hidden; margin-bottom: 0; border-bottom: 1px solid var(--border);
+    }
+
+    .hero-banner-img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: top center; display: block;
+      transition: transform 8s ease;
+    }
+
+    .hero-banner-vid {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: top center; display: block;
+      transition: transform 8s ease;
+      z-index: 0;
+    }
+
+    .hero-banner:hover .hero-banner-vid { transform: scale(1.04); }
+    .hero-banner:hover .hero-banner-img { transform: scale(1.04); }
+
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to right, rgba(10,3,3,0.82) 0%, rgba(10,3,3,0.60) 35%, rgba(10,3,3,0.15) 65%, transparent 100%),
+        linear-gradient(to top, rgba(10,3,3,0.75) 0%, rgba(10,3,3,0.20) 40%, transparent 70%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .wish-overlay {
+      background:
+        linear-gradient(to right, rgba(30,10,40,0.88) 0%, rgba(30,10,40,0.70) 35%, rgba(30,10,40,0.2) 65%, transparent 100%),
+        linear-gradient(to top, rgba(30,10,40,0.85) 0%, rgba(30,10,40,0.25) 40%, transparent 70%);
+    }
+
+    .hero-content {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 2.5rem 3rem 2.5rem 3rem; max-width: 640px;
+      pointer-events: none;
+    }
+
+    .hero-event-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(200,16,46,0.25); border: 1px solid rgba(200,16,46,0.55);
+      border-radius: 20px; padding: 5px 16px; font-size: 0.78rem; color: #ffccd5;
+      margin-bottom: 1rem; width: fit-content; letter-spacing: 0.06em; font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-event-badge .badge-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--accent2);
+      box-shadow: 0 0 6px var(--accent2); animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+
+    .hero-char-name {
+      font-family: 'Noto Serif JP', serif; font-size: 3.8rem; font-weight: 700;
+      line-height: 1.1; margin-bottom: 0.3rem; color: #fff;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+    }
+
+    .hero-char-name span {
+      background: linear-gradient(135deg, #fff 40%, #ffc8d4);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .hero-char-romaji {
+      font-size: 1rem; color: rgba(255,255,255,0.65);
+      margin-bottom: 0.6rem; letter-spacing: 0.12em; font-weight: 300;
+    }
+
+    .hero-event-name {
+      font-family: 'Noto Serif JP', serif; font-size: 1.3rem; font-weight: 600;
+      color: #ffd4a0; margin-bottom: 1.2rem; text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    }
+
+    .hero-meta-row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.6rem; pointer-events: auto; }
+
+    .hero-meta-pill {
+      display: flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; color: rgba(255,255,255,0.85);
+      backdrop-filter: blur(6px);
+    }
+
+    .hero-stats-row { display: flex; gap: 0.8rem; flex-wrap: wrap; pointer-events: auto; }
+
+    .h-stat {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px; padding: 0.65rem 1.1rem; text-align: center; min-width: 78px;
+      backdrop-filter: blur(8px);
+    }
+
+    .h-stat-num {
+      font-size: 1.5rem; font-weight: 700;
+      background: linear-gradient(135deg, #fff, #ffc8a0);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .h-stat-label { font-size: 0.65rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .hero-right-tags {
+      position: absolute; right: 2rem; bottom: 2.5rem; z-index: 2;
+      display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end;
+    }
+
+    .hero-rtag {
+      display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.35rem 0.8rem;
+      font-size: 0.75rem; color: rgba(255,230,200,0.9); backdrop-filter: blur(6px);
+    }
+
+    .rtag-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ══════════════════════════════
+       DASHBOARD CALENDAR & CHARTS
+    ══════════════════════════════ */
+    .dash-container { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .dash-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(180,100,60,0.06); }
+    
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .cal-title { font-family: 'Noto Serif JP', serif; font-size: 1.2rem; font-weight: 700; color: var(--text); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+    .cal-day-name { font-size: 0.75rem; color: var(--muted); font-weight: 600; margin-bottom: 0.5rem; }
+    .cal-cell { aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85rem; border: 1px solid transparent; cursor: pointer; transition: all 0.2s; position: relative; }
+    .cal-cell:hover:not(.is-empty) { background: rgba(200,16,46,0.05); border-color: rgba(200,16,46,0.15); }
+    .cal-cell.is-empty { cursor: default; }
+    .cal-today { background: var(--warm1); border-color: var(--gold) !important; font-weight: bold; }
+    .cal-cell.has-item { font-weight: 700; color: var(--accent); background: rgba(200,16,46,0.02); border-color: rgba(200,16,46,0.1); }
+    .cal-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin-top: 3px; box-shadow: 0 0 4px rgba(200,16,46,0.5); }
+    
+    .cal-selected-info { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); min-height: 80px; }
+    .cal-item-row { display: flex; justify-content: space-between; align-items: center; background: var(--warm1); padding: 0.5rem 0.8rem; border-radius: 8px; margin-top: 0.5rem; border: 1px solid var(--border); font-size: 0.85rem;}
+    .cal-item-price { font-weight: 600; color: var(--gold); }
+
+    .chart-container { height: 240px; display: flex; align-items: flex-end; gap: 8px; margin-top: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; position: relative; }
+    .chart-bar { width: 100%; max-width: 36px; background: linear-gradient(to top, var(--accent2), var(--accent)); border-radius: 6px 6px 0 0; transition: height 0.6s ease; position: relative; cursor: pointer; box-shadow: 0 4px 8px rgba(200,16,46,0.15); }
+    .chart-bar:hover { filter: brightness(1.1); }
+    .chart-label { font-size: 0.75rem; color: var(--muted); margin-top: 8px; font-weight: 600; }
+    .chart-tooltip { position: absolute; top: -35px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; white-space: nowrap; pointer-events: none; z-index: 10; font-weight: bold; }
+    .chart-bar-wrap:hover .chart-tooltip { opacity: 1; transform: translateY(-5px); }
+
+    /* ══════════════════════════════
+       コンテンツエリア (Content Area)
+    ══════════════════════════════ */
+    .content-area { display: grid; grid-template-columns: 1fr 280px; gap: 1.5rem; padding: 1.5rem; }
+
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+
+    .section-title { font-family: 'Noto Serif JP', serif; font-size: 1rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+    .section-title::before { content: ''; width: 4px; height: 1.1em; background: linear-gradient(180deg, var(--accent), var(--gold)); border-radius: 2px; }
+
+    .controls-bar { display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.2rem; }
+    .search-wrap { flex: 1; min-width: 180px; position: relative; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+
+    .search-input {
+      width: 100%; background: rgba(255,255,255,0.85); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.6rem 0.9rem 0.6rem 2.4rem; color: var(--text); font-family: inherit; font-size: 0.88rem;
+      outline: none; transition: border .2s; box-shadow: 0 2px 8px rgba(180,100,60,0.06);
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--muted); }
+
+    .flt {
+      background: rgba(255,255,255,0.85); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.6rem 0.9rem; color: var(--text); font-family: inherit; font-size: 0.82rem; outline: none; cursor: pointer;
+    }
+    .flt option { background: #fff; color: var(--text); }
+
+    .btn-add {
+      display: flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, var(--accent), var(--nekoma2));
+      border: none; border-radius: 10px; padding: 0.6rem 1.2rem; color: #fff; font-family: inherit; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all .25s; box-shadow: 0 4px 16px rgba(200,16,46,0.25); white-space: nowrap;
+    }
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(200,16,46,0.38); }
+
+    .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+
+    /* CARD STRUCTURE */
+    .item-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+      transition: transform .25s, box-shadow .25s, border-color .25s; cursor: pointer; 
+      box-shadow: 0 2px 12px rgba(180,100,60,0.08);
+      position: relative;
+      display: flex; flex-direction: column; 
+      height: 100%;
+    }
+    .item-card:hover { transform: translateY(-6px); border-color: rgba(200,16,46,0.35); box-shadow: 0 16px 40px rgba(180,80,40,0.18); }
+
+    .card-thumb { 
+      width: 100%; height: 180px; position: relative; overflow: hidden; 
+      background: linear-gradient(135deg, var(--warm2), var(--warm3)); 
+      display: flex; align-items: center; justify-content: center; 
+      flex-shrink: 0;
+    }
+    .c-img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .item-card:hover .c-img { transform: scale(1.06); }
+    .card-thumb-placeholder { font-size: 4rem; opacity: 0.4; }
+
+    .got-it-card { opacity: 0.9; }
+    .got-it-card .c-img { filter: grayscale(80%) contrast(1.1); }
+    .got-it-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 20;
+      background: linear-gradient(90deg, #0d7a4a, #109b5e); padding: 0.65rem 1rem;
+      display: flex; align-items: center; justify-content: center; pointer-events: none;
+      border-radius: 0 0 16px 16px; box-shadow: 0 -4px 12px rgba(13,122,74,0.15);
+    }
+    .got-it-badge { color: white; font-size: 0.95rem; font-weight: bold; letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.4rem; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
+    .thumb-nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(0,0,0,0.5); color: #fff; border: none; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: all .2s; z-index: 10; font-size: 14px; font-weight: bold;
+    }
+    .item-card:hover .thumb-nav-btn, .detail-hero-img-wrap:hover .thumb-nav-btn { opacity: 1; }
+    .thumb-nav-btn:hover { background: rgba(0,0,0,0.85); transform: translateY(-50%) scale(1.1); }
+    .thumb-nav-btn.t-left { left: 8px; }
+    .thumb-nav-btn.t-right { right: 8px; }
+    .thumb-indicator { position: absolute; bottom: 8px; background: rgba(0,0,0,0.65); color: #fff; font-size: 0.65rem; padding: 2px 8px; border-radius: 12px; z-index: 5; font-weight: bold; letter-spacing: 0.05em; pointer-events: none; }
+
+    .card-status-badge { position: absolute; top: 8px; left: 8px; padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; box-shadow: 0 2px 6px rgba(0,0,0,0.25); z-index: 2; white-space: nowrap; }
+    .badge-owned { background: #0d7a4a; color: #fff; }
+    .badge-wish { background: #9c27b0; color: #fff; }
+    .badge-preorder { background: #b8860b; color: #fff; }
+
+    .card-qty-badge { position: absolute; top: 8px; right: 8px; background: #b8860b; color: #fff; border-radius: 6px; padding: 4px 9px; font-size: 0.75rem; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.25); z-index: 2; white-space: nowrap; }
+
+    .fav-btn{ position:absolute; top: 44px; left: 8px; z-index: 3; width: 34px; height: 34px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.35); backdrop-filter: blur(6px); color: rgba(255,255,255,0.9); display:flex; align-items:center; justify-content:center; cursor:pointer; transition: all .2s; font-size: 18px; line-height: 1; }
+    .fav-btn:hover{ background: rgba(0,0,0,0.55); transform: scale(1.05); }
+    .fav-btn.is-fav{ color: #ff4d6d; text-shadow: 0 0 10px rgba(255,77,109,0.35); }
+
+    .card-body { padding: 0.9rem; flex: 1; }
+    .card-name { font-size: 0.92rem; font-weight: 600; margin-bottom: 0.2rem; color: var(--text); line-height: 1.3; }
+    .card-type { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .ctag { font-size: 0.68rem; padding: 2px 8px; border-radius: 12px; background: rgba(180,120,60,0.08); color: var(--muted); border: 1px solid var(--border); white-space: nowrap; }
+    .ctag-red { background: rgba(200,16,46,0.1); color: var(--accent); border-color: rgba(200,16,46,0.25); }
+
+    .card-footer { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); background: rgba(255,248,235,0.5); white-space: nowrap; }
+
+    .sidebar-widget { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.2rem; margin-bottom: 1.2rem; box-shadow: 0 2px 12px rgba(180,100,60,0.06); }
+    .widget-title { font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem; }
+    .recent-list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .recent-item { display: flex; align-items: center; gap: 0.6rem; background: var(--warm1); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.78rem; color: var(--text); }
+    .recent-item-icon { font-size: 0.8rem; color: var(--muted); }
+    .recent-item-text { flex: 1; }
+    .recent-item-x { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.7rem; padding: 2px; border-radius: 4px; transition: color .2s; }
+    .recent-item-x:hover { color: var(--accent); }
+
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag-chip { background: var(--warm1); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; color: var(--muted); cursor: pointer; transition: all .2s; }
+    .tag-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(200,16,46,0.08); }
+
+    .cost-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border); }
+    .cost-label { color: var(--muted); }
+    .cost-val { color: var(--gold); font-weight: 600; }
+
+    .wish-content { padding: 1.5rem; }
+
+    /* モーダル (Modal) */
+    .overlay { position: fixed; inset: 0; background: rgba(60,20,10,0.5); backdrop-filter: blur(8px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .overlay.open { display: flex; }
+    .modal { background: var(--panel); border: 1px solid var(--border); border-radius: 22px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; padding: 0; position: relative; animation: modalIn .3s cubic-bezier(.34,1.56,.64,1); box-shadow: 0 24px 80px rgba(80,30,10,0.22); }
+    @keyframes modalIn { from { transform: scale(0.88) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+    .modal-header { padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(255,220,180,0.5), transparent); border-radius: 22px 22px 0 0; }
+    .modal-header h2 { font-family: 'Noto Serif JP', serif; font-size: 1.2rem; color: var(--text); }
+    .modal-close { width: 34px; height: 34px; background: rgba(180,100,60,0.08); border: none; color: var(--muted); border-radius: 10px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+    .modal-close:hover { background: rgba(200,16,46,0.12); color: var(--accent); }
+
+    .modal-body { padding: 1.5rem; }
+    .img-upload-area { border: 2px dashed var(--border); border-radius: 14px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all .25s; background: var(--warm1); margin-bottom: 1.2rem; position: relative; overflow: hidden; }
+    .img-upload-area:hover { border-color: var(--accent); background: rgba(200,16,46,0.04); }
+    .upload-hint { color: var(--muted); font-size: 0.82rem; }
+    .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5; }
+    
+    .img-preview-container { display: flex; gap: 0.5rem; overflow-x: auto; margin-top: 0.5rem; }
+    .img-preview-container::-webkit-scrollbar { display: none; }
+    .img-preview-container { -ms-overflow-style: none; scrollbar-width: none; }
+    .preview-box { position: relative; width: 80px; height: 80px; flex-shrink: 0; border-radius: 8px; border: 1px solid var(--border); overflow: visible; }
+    .preview-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .preview-box .rm-btn { position: absolute; top: -6px; right: -6px; background: #c8102e; color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+    .status-toggle { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; }
+    .stoggle-btn { flex: 1; padding: 0.55rem; border-radius: 10px; border: 1px solid var(--border); background: var(--warm1); color: var(--muted); font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all .2s; font-weight: 500; }
+    .stoggle-btn.sel-owned { border-color: rgba(16,200,80,0.5); background: rgba(16,200,80,0.08); color: #0d7a4a; }
+    .stoggle-btn.sel-wishlist { border-color: rgba(180,77,204,0.5); background: rgba(180,77,204,0.08); color: var(--wishlist); }
+
+    .fg { margin-bottom: 1rem; }
+    .fg label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.4rem; font-weight: 500; }
+    .fi { width: 100%; background: rgba(255,255,255,0.9); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.9rem; color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; transition: border .2s; }
+    .fi:focus { border-color: var(--accent); }
+    .fi option { background: #fff; color: var(--text); }
+    textarea.fi { resize: vertical; min-height: 80px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    
+    .qty-ctrl { display: flex; align-items: center; gap: 0.5rem; }
+    .qty-btn { width: 34px; height: 34px; background: var(--warm1); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+    .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+    
+    /* Updated Qty Display to be an Input with Fixed Width */
+    .qty-display { width: 80px; text-align: center; background: rgba(255,255,255,0.9); border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem; font-size: 1.1rem; font-weight: 700; color: var(--gold); outline: none; }
+    .qty-display:focus { border-color: var(--accent); }
+    input.qty-display::-webkit-outer-spin-button, input.qty-display::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input.qty-display[type=number] { -moz-appearance: textfield; min-width: 0; }
+
+    .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.7rem; background: rgba(255,248,235,0.5); flex-wrap: wrap; }
+    .btn { padding: 0.65rem 1.2rem; border-radius: 10px; border: none; font-family: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--nekoma2)); color: #fff; box-shadow: 0 4px 16px rgba(200,16,46,0.22); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(200,16,46,0.35); }
+    .btn-ghost { background: var(--warm1); border: 1px solid var(--border); color: var(--muted); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+    .btn-del { background: rgba(200,16,46,0.08); border: 1px solid rgba(200,16,46,0.2); color: var(--accent); }
+    .btn-del:hover { background: rgba(200,16,46,0.15); }
+    .btn-buy { background: #0d7a4a; color: #fff; box-shadow: 0 4px 16px rgba(13,122,74,0.25); }
+    .btn-buy:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(13,122,74,0.4); background: #0b693e; }
+
+    .detail-hero-img-wrap { position: relative; width: 100%; height: 260px; background: linear-gradient(135deg, var(--warm2), var(--warm3)); border-radius: 14px 14px 0 0; overflow: hidden; }
+    .detail-hero-img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; transition: transform .3s; }
+    .detail-hero-img:hover { transform: scale(1.02); }
+    .detail-hero-placeholder { width: 100%; height: 240px; display: flex; align-items: center; justify-content: center; font-size: 6rem; background: linear-gradient(135deg, var(--warm2), var(--warm3)); border-radius: 14px 14px 0 0; }
+    
+    .d-badge-wish { background: #9c27b0; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); white-space: nowrap; }
+    .d-badge-owned { background: #0d7a4a; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); white-space: nowrap; }
+
+    .detail-body { padding: 1.5rem; }
+    .detail-title { font-family: 'Noto Serif JP', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--text); }
+    .detail-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.2rem; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
+    .dg-item { background: var(--warm1); border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 0.9rem; }
+    .dg-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+    .dg-val { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+
+    .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--muted); }
+    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.4; }
+    .empty-msg { font-size: 0.92rem; margin-bottom: 1.5rem; }
+
+    #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1.4rem; font-size: 0.88rem; z-index: 999; transform: translateY(60px); opacity: 0; transition: all .3s cubic-bezier(.34,1.56,.64,1); pointer-events: none; max-width: 300px; box-shadow: 0 8px 24px rgba(180,80,40,0.15); }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.t-ok { border-color: rgba(16,200,80,0.4); color: #0d7a4a; }
+    #toast.t-del { border-color: rgba(200,16,46,0.4); color: var(--accent); }
+    #toast.t-wish { border-color: rgba(180,77,204,0.4); color: var(--wishlist); }
+
+    #ov-lightbox { z-index: 300; background: rgba(0,0,0,0.85); flex-direction: column; }
+    #lb-img { max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    #lb-nav { margin-top: 1.5rem; display: flex; gap: 1.5rem; align-items: center; }
+
+    @media(max-width:900px) {
+      .content-area { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .hero-banner { height: 400px; }
+      .hero-right-tags { display: none; }
+      .dash-grid { grid-template-columns: 1fr; }
+    }
+    @media(max-width:640px) {
+      .hero-banner { height: 320px; }
+      .hero-content { padding: 1.5rem; }
+      .hero-char-name { font-size: 2.4rem; }
+      .hero-event-name { font-size: 1rem; }
+      .hero-stats-row { gap: 0.5rem; }
+      .h-stat { min-width: 60px; padding: 0.5rem 0.7rem; }
+      .h-stat-num { font-size: 1.2rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .modal { border-radius: 16px 16px 0 0; max-width: 100%; position: fixed; bottom: 0; }
+      .overlay { align-items: flex-end; }
+      #ov-lightbox { align-items: center; justify-content: center; }
+    }
+  </style>
+</head>
+<body data-lang="ja">
+
+<div class="bg-fx"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-logo">
+    <div class="logo-mark">鉄</div>
+    <div>
+      <div class="logo-text">
+        <span class="ja">黒尾鉄朗コレクション</span>
+        <span class="zh">黑尾鐵朗 收藏</span>
+      </div>
+      <span class="logo-sub">
+        <span class="ja">根付 · フィギュア · グッズ管理</span>
+        <span class="zh">吊飾 · 模型 · 周邊管理</span>
+      </span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchPage('col',this)">
+      <span class="ja">🏠 マイコレクション</span><span class="zh">🏠 我的收藏</span>
+    </button>
+    <button class="nav-tab" onclick="switchPage('wish',this)">
+      <span class="ja">💜 ウィッシュリスト</span><span class="zh">💜 願望清單</span>
+    </button>
+    <button class="nav-tab" onclick="switchPage('dash',this)">
+      <span class="ja">📊 ダッシュボード</span><span class="zh">📊 儀表板</span>
+    </button>
+    <button class="lang-btn" onclick="toggleLang()">
+      🌐 <span class="ja">繁體中文</span><span class="zh">日本語</span>
+    </button>
+  </div>
+</nav>
+
+<div id="page-col" class="page active">
+  
+  <div class="hero-banner">
+    <img class="hero-banner-img" src="HAIKYU!! FLY HIGH!! GACHA.jpeg" alt="Banner"/>
+    <video class="hero-banner-vid" src="Hero.mp4" autoplay muted loop playsinline></video>
+    
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-event-badge">
+        <div class="badge-dot"></div>
+        <span class="ja">🏐 ハイキュー！！ FLY HIGH!!</span><span class="zh">🏐 排球少年！！ FLY HIGH!!</span>
+      </div>
+      <div class="hero-char-name"><span>黒尾 鉄朗</span></div>
+      <div class="hero-char-romaji">KUROO TETSURŌ</div>
+      <div class="hero-event-name">
+        <span class="ja">🎆 花火大会 Special Edition</span><span class="zh">🎆 煙火大會 Special Edition</span>
+      </div>
+      <div class="hero-meta-row">
+        <div class="hero-meta-pill"><span class="ja">🏫 音駒高校</span><span class="zh">🏫 音駒高中</span></div>
+        <div class="hero-meta-pill"><span class="ja">🏐 ミドルブロッカー #1</span><span class="zh">🏐 攔網員 #1</span></div>
+        <div class="hero-meta-pill">🎙 CV：中村悠一</div>
+      </div>
+      <div class="hero-stats-row">
+        <div class="h-stat"><div class="h-stat-num" id="s-total">0</div><div class="h-stat-label"><span class="ja">合計</span><span class="zh">總計</span></div></div>
+        <div class="h-stat"><div class="h-stat-num" id="s-owned">0</div><div class="h-stat-label"><span class="ja">所持中</span><span class="zh">已擁有</span></div></div>
+        <div class="h-stat"><div class="h-stat-num" id="s-qty">0</div><div class="h-stat-label"><span class="ja">総個数</span><span class="zh">總數</span></div></div>
+        <div class="h-stat"><div class="h-stat-num" id="s-spend">¥0</div><div class="h-stat-label"><span class="ja">総費用</span><span class="zh">總花費</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-area">
+    <div class="main-col">
+      <div class="section-header">
+        <div class="section-title"><span class="ja">アイテム一覧</span><span class="zh">物品列表</span></div>
+        <button class="btn-add" onclick="openForm('owned')">
+          <span class="ja">＋ アイテム追加</span><span class="zh">＋ 新增物品</span>
+        </button>
+      </div>
+
+      <div class="controls-bar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" id="search-col" type="text" data-ph-ja="商品名・シリーズ・タイプで検索…" data-ph-zh="依名稱/系列/類型搜尋…" oninput="render()" onchange="saveRecentSearch(this.value.trim())"/>
+        </div>
+        <select class="flt" id="flt-type" onchange="render()">
+          <option value="" data-ja="全タイプ" data-zh="全類型"></option>
+          <option value="缶バッジ" data-ja="缶バッジ" data-zh="徽章"></option>
+          <option value="アクリル" data-ja="アクリル" data-zh="壓克力"></option>
+          <option value="アクリルスタンド" data-ja="アクリルスタンド" data-zh="立牌"></option>
+          <option value="アクリルブロック" data-ja="アクリルブロック" data-zh="壓克力磚"></option>
+          <option value="ストラップ" data-ja="ストラップ" data-zh="吊飾"></option>
+          <option value="キーホルダー" data-ja="キーホルダー" data-zh="鑰匙圈"></option>
+          <option value="クリアファイル" data-ja="クリアファイル" data-zh="資料夾"></option>
+          <option value="ポストカード" data-ja="ポストカード" data-zh="明信片"></option>
+          <option value="ぱしゃこれ" data-ja="ぱしゃこれ" data-zh="拍立得"></option>
+          <option value="キャラカード" data-ja="キャラカード" data-zh="小卡"></option>
+          <option value="ポスター" data-ja="ポスター" data-zh="海報"></option>
+          <option value="タペストリー" data-ja="タペストリー" data-zh="掛軸"></option>
+          <option value="コースター" data-ja="コースター" data-zh="杯墊"></option>
+          <option value="マグネット" data-ja="マグネット" data-zh="磁鐵"></option>
+          <option value="ステッカー" data-ja="ステッカー" data-zh="貼紙"></option>
+          <option value="ぬいぐるみ" data-ja="ぬいぐるみ" data-zh="娃娃"></option>
+          <option value="フィギュア" data-ja="フィギュア" data-zh="公仔"></option>
+          <option value="バッグ" data-ja="バッグ" data-zh="包包"></option>
+          <option value="名札" data-ja="名札" data-zh="名牌"></option>
+          <option value="スクエア缶バッジ" data-ja="スクエア缶バッジ" data-zh="方徽"></option>
+          <option value="デコレクション缶バッジ" data-ja="デコレクション缶バッジ" data-zh="浮雕徽章"></option>
+          <option value="レンチキュラー缶バッジ" data-ja="レンチキュラー缶バッジ" data-zh="光珊徽章"></option>
+          <option value="バースデイ缶バッジ" data-ja="バースデイ缶バッジ" data-zh="生日徽章"></option>
+          <option value="アクリルぷちスタンド" data-ja="アクリルぷちスタンド" data-zh="小立牌"></option>
+          <option value="クリアカード" data-ja="クリアカード" data-zh="透卡"></option>
+          <option value="ホロカード" data-ja="ホロカード" data-zh="全息卡"></option>
+          <option value="ステータスカードコレクション" data-ja="ステータスカードコレクション" data-zh="數據卡"></option>
+          <option value="アートカードコレクション" data-ja="アートカードコレクション" data-zh="藝術卡"></option>
+          <option value="メモリアルコレクション" data-ja="メモリアルコレクション" data-zh="回憶相卡"></option>
+          <option value="バースデイカード" data-ja="バースデイカード" data-zh="生日卡"></option>
+          <option value="ふわコロりん" data-ja="ふわコロりん" data-zh="圓滾滾"></option>
+          <option value="ちびぐるみ" data-ja="ちびぐるみ" data-zh="努努"></option>
+          <option value="もちマス" data-ja="もちマス" data-zh="趴娃"></option>
+          <option value="のるキャラマスコット" data-ja="のるキャラマスコット" data-zh="Js趴娃"></option>
+          <option value="ねんどろいど" data-ja="ねんどろいど" data-zh="黏土人"></option>
+          <option value="ガラスマグネット" data-ja="ガラスマグネット" data-zh="玻璃磁鐵"></option>
+          <option value="ミラー風アクリルステッカー" data-ja="ミラー風アクリルステッカー" data-zh="鏡面壓克力貼"></option>
+          <option value="バースデー アクリルブロック" data-ja="バースデー アクリルブロック" data-zh="生日磚"></option>
+          <option value="バースデイ名場面ジオラマフィギュア" data-ja="バースデイ名場面ジオラマフィギュア" data-zh="生日名場面立牌"></option>
+          <option value="プライズフィギュア" data-ja="プライズフィギュア" data-zh="景品模型"></option>
+          <option value="その他" data-ja="その他" data-zh="其他"></option>
+        </select>
+        <select class="flt" id="flt-sort" onchange="render()">
+          <option value="newest" data-ja="新着順" data-zh="最新"></option>
+          <option value="name" data-ja="名前順" data-zh="名稱"></option>
+          <option value="price" data-ja="価格順" data-zh="價格"></option>
+          <option value="qty" data-ja="個数順" data-zh="數量"></option>
+        </select>
+      </div>
+      <div class="collection-grid" id="grid-col"></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="sidebar-widget">
+        <div class="widget-title">💴 <span class="ja">費用サマリー</span><span class="zh">費用總覽</span></div>
+        <div class="cost-row"><span class="cost-label"><span class="ja">所持アイテム</span><span class="zh">已擁有物品</span></span><span class="cost-val" id="cost-owned">¥0</span></div>
+        <div class="cost-row"><span class="cost-label"><span class="ja">ウィッシュ予算</span><span class="zh">願望清單預算</span></span><span class="cost-val" id="cost-wish">¥0</span></div>
+        <div class="cost-row" style="border:none"><span class="cost-label"><span class="ja">合計</span><span class="zh">總計</span></span><span class="cost-val" id="cost-total" style="color:var(--accent)">¥0</span></div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="widget-title">🕐 <span class="ja">最近の検索</span><span class="zh">最近搜尋</span></div>
+        <div class="recent-list" id="recent-list"></div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="widget-title">🏷️ <span class="ja">タイプ別フィルター</span><span class="zh">類型篩選</span></div>
+        <div class="tag-cloud" id="tag-cloud"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-wish" class="page">
+  <div class="hero-banner">
+    <img class="hero-banner-img" src="646379385_122293609460218649_4795694109541554921_n.jpg" alt="Banner"/>
+    <div class="hero-overlay wish-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-event-badge" style="background: rgba(123,45,139,0.25); border-color: rgba(123,45,139,0.55); color: #eebbff;">
+        <div class="badge-dot" style="background: #b44dcc; box-shadow: 0 0 6px #b44dcc;"></div>
+        <span class="ja">💜 いつか手に入れたい</span><span class="zh">💜 未來想入手</span>
+      </div>
+      <div class="hero-char-name">
+        <span class="ja" style="background: linear-gradient(135deg, #fff 40%, #eebbff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ウィッシュリスト</span>
+        <span class="zh" style="background: linear-gradient(135deg, #fff 40%, #eebbff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">願望清單</span>
+      </div>
+      <div class="hero-char-romaji">WISHLIST · KUROO TETSURŌ</div>
+      <div class="hero-event-name">
+        <span class="ja">目標のグッズを管理しよう</span><span class="zh">管理目標周邊商品</span>
+      </div>
+      <div class="hero-stats-row" style="margin-top: 1rem;">
+        <div class="h-stat">
+          <div class="h-stat-num" id="w-total">0</div>
+          <div class="h-stat-label"><span class="ja">欲しい数</span><span class="zh">願望數</span></div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-num" id="w-budget">¥0</div>
+          <div class="h-stat-label"><span class="ja">必要予算</span><span class="zh">所需預算</span></div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-num" id="w-got">0</div>
+          <div class="h-stat-label"><span class="ja">入手済み</span><span class="zh">已入手</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wish-content">
+    <div class="section-header">
+      <div class="section-title"><span class="ja">ウィッシュアイテム</span><span class="zh">願望物品</span></div>
+      <button class="btn-add" style="background: linear-gradient(135deg, var(--wishlist), var(--wish2)); box-shadow: 0 4px 16px rgba(123,45,139,0.25);" onclick="openForm('wishlist')">
+        <span class="ja">＋ 追加する</span><span class="zh">＋ 新增</span>
+      </button>
+    </div>
+    <div class="controls-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="search-wish" type="text" data-ph-ja="ウィッシュリストを検索…" data-ph-zh="搜尋願望清單…" oninput="renderWish()"/>
+      </div>
+      <select class="flt" id="flt-priority" onchange="renderWish()">
+        <option value="" data-ja="全優先度" data-zh="全優先級"></option>
+        <option value="🔥 最優先" data-ja="🔥 最優先" data-zh="🔥 最優先"></option>
+        <option value="⭐ 高" data-ja="⭐ 高" data-zh="⭐ 高"></option>
+        <option value="😊 中" data-ja="😊 中" data-zh="😊 中"></option>
+        <option value="📝 低" data-ja="📝 低" data-zh="📝 低"></option>
+      </select>
+    </div>
+    <div class="collection-grid" id="grid-wish"></div>
+  </div>
+</div>
+
+<div id="page-dash" class="page">
+  <div class="dash-container">
+    <div class="section-header" style="margin-bottom: 1.5rem;">
+      <div class="section-title" style="font-size: 1.4rem;"><span class="ja">📊 ダッシュボード</span><span class="zh">📊 分析儀表板</span></div>
+    </div>
+    
+    <div class="dash-card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--warm1), var(--warm2)); border-color: var(--gold);">
+      <div class="cal-header">
+        <h3 class="cal-title">☁️ <span class="ja">クラウドデータ管理</span><span class="zh">雲端資料管理</span></h3>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text); margin-bottom: 1rem; line-height: 1.5;">
+        <span class="ja">データは自動的にクラウド (Supabase) に同期されています。安全のためのローカルバックアップや、別アカウントへのデータ移行に使用できます。</span>
+        <span class="zh">資料已自動同步至雲端 (Supabase)。您可下載本地備份以保安全，或用於轉移資料。</span>
+      </p>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="exportData()" style="flex: 1; min-width: 200px; box-shadow: 0 4px 12px rgba(200,16,46,0.2);">
+          ⬇️ <span class="ja">バックアップ (Export)</span><span class="zh">下載備份 (Export)</span>
+        </button>
+        <button class="btn btn-ghost" onclick="triggerImport()" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.7);">
+          ⬆️ <span class="ja">データを復元 (Import)</span><span class="zh">匯入還原 (Import)</span>
+        </button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="cal-header">
+          <button class="btn btn-ghost" onclick="changeMonth(-1)">❮</button>
+          <h3 class="cal-title" id="cal-month-title"></h3>
+          <button class="btn btn-ghost" onclick="changeMonth(1)">❯</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div id="cal-selected-info" class="cal-selected-info">
+          <span style="color:var(--muted)">
+            <span class="ja">日付をクリックして発売情報を確認</span><span class="zh">點擊日期查看發售資訊</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="cal-header">
+          <h3 class="cal-title">
+            <span class="ja">月別金額 (<span id="chart-year-label"></span>年)</span>
+            <span class="zh">每月發售商品花費 (<span id="chart-year-zh-label"></span>年)</span>
+          </h3>
+        </div>
+        <div class="chart-container" id="spend-chart"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-form">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="form-title"></h2>
+      <button class="modal-close" onclick="closeForm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="status-toggle">
+        <button class="stoggle-btn sel-owned" id="tb-owned" onclick="setStatus('owned')"><span class="ja">✅ 所持中</span><span class="zh">✅ 已擁有</span></button>
+        <button class="stoggle-btn" id="tb-wishlist" onclick="setStatus('wishlist')"><span class="ja">💜 ウィッシュ</span><span class="zh">💜 願望清單</span></button>
+      </div>
+
+      <div class="img-upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept="image/*" multiple onchange="handleImg(event)"/>
+        <div id="upload-hint-content">
+          <div class="upload-icon">📷</div>
+          <div class="upload-hint">
+            <span class="ja">クリックして複数の商品画像をアップロード<br/><small>（画像は自動で圧縮保存されます）</small></span>
+            <span class="zh">點擊上傳多張商品圖片<br/><small>（圖片將自動壓縮儲存）</small></span>
+          </div>
+        </div>
+        <div class="img-preview-container" id="img-preview-container"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="fg">
+          <label><span class="ja">商品名 *</span><span class="zh">商品名稱 *</span></label>
+          <input class="fi" id="f-name" type="text" data-ph-ja="例：黒尾鉄朗 1/8スケールフィギュア" data-ph-zh="例：黑尾鐵朗 1/8比例模型"/>
+        </div>
+        <div class="fg">
+          <label><span class="ja">タイプ</span><span class="zh">類型</span></label>
+          <select class="fi" id="f-type" onchange="toggleCustomType()">
+            <option value="缶バッジ" data-ja="缶バッジ" data-zh="徽章"></option>
+            <option value="アクリル" data-ja="アクリル" data-zh="壓克力"></option>
+            <option value="アクリルスタンド" data-ja="アクリルスタンド" data-zh="立牌"></option>
+            <option value="アクリルブロック" data-ja="アクリルブロック" data-zh="壓克力磚"></option>
+            <option value="ストラップ" data-ja="ストラップ" data-zh="吊飾"></option>
+            <option value="キーホルダー" data-ja="キーホルダー" data-zh="鑰匙圈"></option>
+            <option value="クリアファイル" data-ja="クリアファイル" data-zh="資料夾"></option>
+            <option value="ポストカード" data-ja="ポストカード" data-zh="明信片"></option>
+            <option value="ぱしゃこれ" data-ja="ぱしゃこれ" data-zh="拍立得"></option>
+            <option value="キャラカード" data-ja="キャラカード" data-zh="小卡"></option>
+            <option value="ポスター" data-ja="ポスター" data-zh="海報"></option>
+            <option value="タペストリー" data-ja="タペストリー" data-zh="掛軸"></option>
+            <option value="コースター" data-ja="コースター" data-zh="杯墊"></option>
+            <option value="マグネット" data-ja="マグネット" data-zh="磁鐵"></option>
+            <option value="ステッカー" data-ja="ステッカー" data-zh="貼紙"></option>
+            <option value="ぬいぐるみ" data-ja="ぬいぐるみ" data-zh="娃娃"></option>
+            <option value="フィギュア" data-ja="フィギュア" data-zh="公仔"></option>
+            <option value="バッグ" data-ja="バッグ" data-zh="包包"></option>
+            <option value="名札" data-ja="名札" data-zh="名牌"></option>
+            <option value="スクエア缶バッジ" data-ja="スクエア缶バッジ" data-zh="方徽"></option>
+            <option value="デコレクション缶バッジ" data-ja="デコレクション缶バッジ" data-zh="浮雕徽章"></option>
+            <option value="レンチキュラー缶バッジ" data-ja="レンチキュラー缶バッジ" data-zh="光珊徽章"></option>
+            <option value="バースデイ缶バッジ" data-ja="バースデイ缶バッジ" data-zh="生日徽章"></option>
+            <option value="アクリルぷちスタンド" data-ja="アクリルぷちスタンド" data-zh="小立牌"></option>
+            <option value="クリアカード" data-ja="クリアカード" data-zh="透卡"></option>
+            <option value="ホロカード" data-ja="ホロカード" data-zh="全息卡"></option>
+            <option value="ステータスカードコレクション" data-ja="ステータスカードコレクション" data-zh="數據卡"></option>
+            <option value="アートカードコレクション" data-ja="アートカードコレクション" data-zh="藝術卡"></option>
+            <option value="メモリアルコレクション" data-ja="メモリアルコレクション" data-zh="回憶相卡"></option>
+            <option value="バースデイカード" data-ja="バースデイカード" data-zh="生日卡"></option>
+            <option value="ふわコロりん" data-ja="ふわコロりん" data-zh="圓滾滾"></option>
+            <option value="ちびぐるみ" data-ja="ちびぐるみ" data-zh="努努"></option>
+            <option value="もちマス" data-ja="もちマス" data-zh="趴娃"></option>
+            <option value="のるキャラマスコット" data-ja="のるキャラマスコット" data-zh="Js趴娃"></option>
+            <option value="ねんどろいど" data-ja="ねんどろいど" data-zh="黏土人"></option>
+            <option value="ガラスマグネット" data-ja="ガラスマグネット" data-zh="玻璃磁鐵"></option>
+            <option value="ミラー風アクリルステッカー" data-ja="ミラー風アクリルステッカー" data-zh="鏡面壓克力貼"></option>
+            <option value="バースデー アクリルブロック" data-ja="バースデー アクリルブロック" data-zh="生日磚"></option>
+            <option value="バースデイ名場面ジオラマフィギュア" data-ja="バースデイ名場面ジオラマフィギュア" data-zh="生日名場面立牌"></option>
+            <option value="プライズフィギュア" data-ja="プライズフィギュア" data-zh="景品模型"></option>
+            <option value="その他" data-ja="その他" data-zh="其他"></option>
+          </select>
+          <input class="fi" id="f-type-custom" type="text" data-ph-ja="具体的な種類を入力（任意）" data-ph-zh="輸入具體種類（選填）" style="display:none; margin-top:0.5rem;" />
+        </div>
+      </div>
+
+      <div class="fg">
+        <label><span class="ja">シリーズ / エディション</span><span class="zh">系列 / 版本</span></label>
+        <select class="fi" id="f-series">
+          <option value="" data-ja="-- 選択してください --" data-zh="-- 請選擇 --"></option>
+          <option value="通常版" data-ja="通常版" data-zh="通常版"></option>
+          <option value="バースデイ" data-ja="バースデイ" data-zh="生日"></option>
+          <option value="原画" data-ja="原画" data-zh="原畫"></option>
+          <option value="箔押し" data-ja="箔押し" data-zh="燙金"></option>
+          <option value="セット" data-ja="セット" data-zh="套組"></option>
+          <option value="くじ" data-ja="くじ (一番くじ)" data-zh="抽賞 (一番賞)"></option>
+          <option value="ジャンプフェスタ" data-ja="ジャンプフェスタ" data-zh="Jump Festa"></option>
+          <option value="ハイキュー!!展" data-ja="ハイキュー!!展" data-zh="排球少年！！展"></option>
+          <option value="アニメイトカフェ" data-ja="アニメイトカフェ" data-zh="安利美特咖啡"></option>
+          <option value="ジャンプショップ" data-ja="ジャンプショップ" data-zh="Jump Shop"></option>
+          <option value="TOHO animation" data-ja="TOHO animation" data-zh="TOHO animation"></option>
+          <option value="にとたん" data-ja="にとたん" data-zh="Nitotan (二頭身)"></option>
+          <option value="幼少期" data-ja="子供時代・幼少期" data-zh="幼年"></option>
+          <option value="FLY HIGH!!" data-ja="FLY HIGH!!" data-zh="FLY HIGH!!"></option>
+          <option value="その他" data-ja="その他" data-zh="其他"></option>
+        </select>
+        <input class="fi" id="f-series-custom" type="text" data-ph-ja="詳細（年・賞など）を入力（任意）" data-ph-zh="輸入詳細資訊（年份・獎項等，選填）" style="margin-top:0.5rem;" />
+      </div>
+
+      <div class="form-row">
+        <div class="fg">
+          <label><span class="ja">所持数量</span><span class="zh">擁有數量</span></label>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="adjustQty(-1)">－</button>
+            <input type="number" class="qty-display" id="qty-display" value="1" onchange="setQtyDisplay(this.value)" />
+            <button class="qty-btn" onclick="adjustQty(1)">＋</button>
+          </div>
+        </div>
+        <div class="fg">
+          <label><span class="ja">参考URL</span><span class="zh">參考連結</span></label>
+          <input class="fi" id="f-url" type="url" data-ph-ja="https://..." data-ph-zh="https://..."/>
+          <button class="btn btn-ghost" type="button" style="margin-top:.5rem; width:100%;" onclick="autofillFromUrl()">
+            <span class="ja">🔎 URLから自動入力</span><span class="zh">🔎 從連結自動帶入</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="owned-fields">
+        <div class="form-row">
+          <div class="fg">
+            <label><span class="ja">発売 / 配布日</span><span class="zh">發售 / 發布日</span></label>
+            <input class="fi" id="f-release" type="date" />
+          </div>
+          <div class="fg">
+            <label><span class="ja">到着状況</span><span class="zh">到貨狀態</span></label>
+            <select class="fi" id="f-arrival">
+              <option value="到着済み" data-ja="到着済み (手元にあり)" data-zh="已到貨 (已在手邊)"></option>
+              <option value="未到着" data-ja="未到着 (予約済 / 発送待ち)" data-zh="未到貨 (已預購 / 等待發貨)"></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="fg">
+            <label><span class="ja">購入価格（円）</span><span class="zh">購買價格(日圓)</span></label>
+            <input class="fi" id="f-price" type="number" placeholder="0"/>
+          </div>
+          <div class="fg">
+            <label><span class="ja">状態</span><span class="zh">狀態</span></label>
+            <select class="fi" id="f-cond">
+              <option value="未開封（シールド）" data-ja="未開封（シールド）" data-zh="未拆封"></option>
+              <option value="ほぼ新品" data-ja="ほぼ新品" data-zh="幾乎全新"></option>
+              <option value="良好" data-ja="良好" data-zh="良好"></option>
+              <option value="普通" data-ja="普通" data-zh="普通"></option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+            <label><span class="ja">購入先</span><span class="zh">購買管道</span></label>
+            <input class="fi" id="f-shop" data-ph-ja="例：あみあみ・メルカリ" data-ph-zh="例：AmiAmi、露天"/>
+        </div>
+      </div>
+
+      <div id="wish-fields" style="display:none">
+        <div class="form-row">
+          <div class="fg">
+            <label><span class="ja">予算（円）</span><span class="zh">預算(日圓)</span></label>
+            <input class="fi" id="f-budget" type="number" placeholder="0"/>
+          </div>
+          <div class="fg">
+            <label><span class="ja">優先度</span><span class="zh">優先級</span></label>
+            <select class="fi" id="f-priority">
+              <option value="🔥 最優先" data-ja="🔥 最優先" data-zh="🔥 最優先"></option>
+              <option value="⭐ 高" data-ja="⭐ 高" data-zh="⭐ 高"></option>
+              <option value="😊 中" data-ja="😊 中" data-zh="😊 中"></option>
+              <option value="📝 低" data-ja="📝 低" data-zh="📝 低"></option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label><span class="ja">メモ</span><span class="zh">備註</span></label>
+        <textarea class="fi" id="f-notes" data-ph-ja="購入場所・特記事項・感想など…" data-ph-zh="購買地點・特殊說明・感想等…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-del" id="btn-del" style="display:none" onclick="deleteItem()">
+        <span class="ja">🗑 削除</span><span class="zh">🗑 刪除</span>
+      </button>
+      <button class="btn btn-ghost" onclick="closeForm()" style="margin-left:auto">
+        <span class="ja">キャンセル</span><span class="zh">取消</span>
+      </button>
+      <button class="btn btn-primary" onclick="saveItem()">
+        <span class="ja">💾 保存する</span><span class="zh">💾 儲存</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-detail">
+  <div class="modal">
+    <div id="detail-inner"></div>
+    <div class="modal-footer" id="detail-footer">
+      <button class="btn btn-del" onclick="deleteFromDetail()"><span class="ja">🗑 削除</span><span class="zh">🗑 刪除</span></button>
+      <button class="btn btn-ghost" onclick="closeDetail()" style="margin-left:auto"><span class="ja">閉じる</span><span class="zh">關閉</span></button>
+      
+      <button id="btn-mark-buy" class="btn btn-buy" style="display:none;" onclick="markAsPurchased()">
+        <span class="ja">🛒 購入した！</span><span class="zh">🛒 已購買！</span>
+      </button>
+
+      <button class="btn btn-primary" onclick="editFromDetail()"><span class="ja">✏️ 編集する</span><span class="zh">✏️ 編輯</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-lightbox">
+  <button class="modal-close" style="position:absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.2); color:#fff; font-size: 1.2rem; width: 44px; height: 44px;" onclick="closeLightbox()">✕</button>
+  <img id="lb-img" />
+  <div id="lb-nav">
+    <button class="btn btn-ghost" style="color:#fff; border-color: rgba(255,255,255,0.3); font-size: 1.2rem; padding: 0.5rem 1rem;" onclick="cycleLightbox(event, -1)">❮</button>
+    <span id="lb-ind" style="color:#fff; font-weight: bold; font-size: 1.1rem; letter-spacing: 0.1em;"></span>
+    <button class="btn btn-ghost" style="color:#fff; border-color: rgba(255,255,255,0.3); font-size: 1.2rem; padding: 0.5rem 1rem;" onclick="cycleLightbox(event, 1)">❯</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════
+   SUPABASE CLOUD DATABASE SETUP
+══════════════════════════════ */
+const SUPABASE_URL = 'https://axagdjwzetclqugdbxpy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_3xj4j0X-e9fb1J5v61QEJg_L-dJ_BqT';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let items = [];
+let currentLang = localStorage.getItem('kuroo-lang') || 'ja';
+
+/* ══ TRANSLATORS FOR SUPABASE COLUMNS ══ */
+function mapToDbRow(item) {
+  return {
+    id: item.id,
+    name: item.name || '',
+    item_type: item.itemType || '',
+    custom_type: item.customType || '',
+    series: item.series || '',
+    custom_series: item.customSeries || '',
+    status: item.status || 'owned',
+    qty: item.qty || 1,
+    price: item.price ? Number(item.price) : null,
+    budget: item.budget ? Number(item.budget) : null,
+    purchase_date: item.date || '', // kept for backwards compatibility in DB
+    release_date: item.release || '',
+    arrival: item.arrival || '',
+    cond: item.cond || '',
+    shop: item.shop || '',
+    priority: item.priority || '',
+    url: item.url || '',
+    notes: item.notes || '',
+    fav: !!item.fav,
+    was_wishlist: !!item.wasWishlist,
+    imgs: item.imgs || [],
+    created_ts: item._ts || Date.now()
+  };
+}
+
+function mapFromDbRow(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    itemType: row.item_type,
+    customType: row.custom_type,
+    series: row.series,
+    customSeries: row.custom_series,
+    status: row.status,
+    qty: row.qty,
+    price: row.price,
+    budget: row.budget,
+    date: row.purchase_date, // kept for backward compatibility inside the app logic if needed
+    release: row.release_date,
+    arrival: row.arrival,
+    cond: row.cond,
+    shop: row.shop,
+    priority: row.priority,
+    url: row.url,
+    notes: row.notes,
+    fav: row.fav,
+    wasWishlist: row.was_wishlist,
+    imgs: row.imgs,
+    _ts: row.created_ts
+  };
+}
+
+/* ══ 翻訳ロジック (i18n Logic) ══ */
+const dict = {
+  // 萬用
+  '缶バッジ': '徽章', 'アクリル': '壓克力', 'アクリルスタンド': '立牌', 'アクリルブロック': '壓克力磚',
+  'ストラップ': '吊飾', 'キーホルダー': '鑰匙圈', 'クリアファイル': '資料夾', 'ポストカード': '明信片',
+  'ぱしゃこれ': '拍立得', 'キャラカード': '小卡', 'ポスター': '海報', 'タペストリー': '掛軸',
+  'コースター': '杯墊', 'マグネット': '磁鐵', 'ステッカー': '貼紙', 'ぬいぐるみ': '娃娃',
+  'フィギュア': '公仔', 'バッグ': '包包', '名札': '名牌', 'その他': '其他',
+  // 比較細項的
+  'スクエア缶バッジ': '方徽', 'デコレクション缶バッジ': '浮雕徽章', 'レンチキュラー缶バッジ': '光珊徽章',
+  'バースデイ缶バッジ': '生日徽章', 'アクリルぷちスタンド': '小立牌', 'クリアカード': '透卡',
+  'ホロカード': '全息卡', 'ステータスカードコレクション': '數據卡', 'アートカードコレクション': '藝術卡',
+  'メモリアルコレクション': '回憶相卡', 'バースデイカード': '生日卡', 'ふわコロりん': '圓滾滾',
+  'ちびぐるみ': '努努', 'もちマス': '趴娃', 'のるキャラマスコット': 'Js趴娃', 'ねんどろいど': '黏土人',
+  'ガラスマグネット': '玻璃磁鐵', 'ミラー風アクリルステッカー': '鏡面壓克力貼', 'バースデー アクリルブロック': '生日磚',
+  'バースデイ名場面ジオラマフィギュア': '生日名場面立牌', 'プライズフィギュア': '景品模型',
+  // 其他 / Series / UI
+  'バースデイ': '生日', '原画': '原畫', '箔押し': '燙金', 'セット': '套組', 'くじ': '抽賞',
+  '子供時代・幼少期': '幼年', 'ジャンプショップ': 'Jump Shop',
+  '通常版': '通常版', 'ジャンプフェスタ': 'Jump Festa', 'ハイキュー!!展': '排球少年！！展',
+  'アニメイトカフェ': '安利美特咖啡', 'TOHO animation': 'TOHO animation', 'にとたん': 'Nitotan (二頭身)',
+  'FLY HIGH!!': 'FLY HIGH!!', '-- 選択してください --': '-- 請選擇 --',
+  '未開封（シールド）': '未拆封', 'ほぼ新品': '幾乎全新', '良好': '良好', '普通': '普通',
+  '🔥 最優先': '🔥 最優先', '⭐ 高': '⭐ 高', '😊 中': '😊 中', '📝 低': '📝 低',
+  '到着済み (手元にあり)': '已到貨 (已在手邊)', '未到着 (予約済 / 発送待ち)': '未到貨 (已預購 / 等待發貨)',
+  '到着済み': '已到貨', '未到着': '未到貨'
+};
+
+function t(str) { return str && currentLang === 'zh' ? (dict[str] || str) : str; }
+
+function updateDynamicText() {
+  document.querySelectorAll('option[data-ja]').forEach(opt => opt.textContent = opt.getAttribute(`data-${currentLang}`));
+  document.querySelectorAll('[data-ph-ja]').forEach(el => el.placeholder = el.getAttribute(`data-ph-${currentLang}`));
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'ja' ? 'zh' : 'ja';
+  localStorage.setItem('kuroo-lang', currentLang);
+  document.body.setAttribute('data-lang', currentLang);
+  updateDynamicText();
+  render(); renderWish(); updateSidebar(); updateWishStats(); 
+  if(document.getElementById('page-dash').classList.contains('active')) renderDashboard();
+}
+
+function toggleCustomType() { document.getElementById('f-type-custom').style.display = (document.getElementById('f-type').value === 'その他') ? 'block' : 'none'; }
+function toggleCustomSeries() { 
+  // No longer hiding/showing because we want the remarks field always visible.
+}
+
+/* ══════════════════════════════
+   DATA SYNC & MAGIC MIGRATION
+══════════════════════════════ */
+async function initApp() {
+  document.body.setAttribute('data-lang', currentLang);
+  updateDynamicText();
+
+  toast('⏳ クラウド同期中…', '⏳ 雲端同步中…', 'ok');
+
+  try {
+    const { data, error } = await db.from('kuroo_items').select('*');
+    if (error) throw error;
+
+    if (data && data.length > 0) {
+      items = data.map(row => mapFromDbRow(row));
+      toast('✅ クラウドから読み込みました', '✅ 已從雲端讀取', 'ok');
+    } else {
+      const localItems = JSON.parse(localStorage.getItem('kuroo-v2') || '[]');
+      if (localItems.length > 0) {
+        items = localItems;
+        toast('⏳ 過去のデータをクラウドに移行中…', '⏳ 正在將舊資料轉移至雲端…', 'ok');
+        for (const i of items) {
+          await db.from('kuroo_items').upsert(mapToDbRow(i));
+        }
+        toast('✅ 移行完了！', '✅ 轉移完成！', 'ok');
+      } else {
+        items = [];
+      }
+    }
+  } catch (err) {
+    console.error("Supabase Sync Error:", err);
+    toast('❌ データベース接続エラー。ローカルを使用します', '❌ 雲端連線失敗，使用本地備份', 'del');
+    items = JSON.parse(localStorage.getItem('kuroo-v2') || '[]');
+  }
+
+  render(); renderWish(); updateSidebar(); updateWishStats();
+  if(document.getElementById('page-dash').classList.contains('active')) renderDashboard();
+}
+
+const uid  = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+async function saveToCloud(itemToSave, isDelete = false, idToDelete = null) {
+  localStorage.setItem('kuroo-v2', JSON.stringify(items));
+  try {
+    if (isDelete && idToDelete) {
+      await db.from('kuroo_items').delete().eq('id', idToDelete);
+    } else if (itemToSave) {
+      await db.from('kuroo_items').upsert(mapToDbRow(itemToSave));
+    } else {
+      for (const i of items) {
+        await db.from('kuroo_items').upsert(mapToDbRow(i));
+      }
+    }
+  } catch (err) {
+    console.error("Cloud Save Failed:", err);
+  }
+}
+
+let editId   = null;
+let detailId = null;
+let formSt   = 'owned';
+let curQty   = 1;
+let curImgs  = [];
+let currentDetailIdx = 0;
+let dashYear = new Date().getFullYear();
+let dashMonth = new Date().getMonth();
+
+/* ══ ナビ切替 ══ */
+function switchPage(p, btn) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  btn.classList.add('active');
+  if(p === 'dash') renderDashboard(); else { render(); renderWish(); updateSidebar(); updateWishStats(); }
+}
+
+function toast(msgJa, msgZh, type) {
+  const t = document.getElementById('toast');
+  t.textContent = currentLang === 'ja' ? msgJa : msgZh;
+  t.className = 't-' + type;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function toggleFav(e, id) {
+  e.stopPropagation();
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  item.fav = !item.fav;
+  await saveToCloud(item);
+  render(); renderWish();
+  toast(item.fav ? '♥ お気に入りに追加' : '♡ お気に入り解除', item.fav ? '♥ 已加入最愛' : '♡ 已取消最愛', 'ok');
+}
+
+window.cycleThumb = function(e, id, dir) {
+  e.stopPropagation();
+  const item = items.find(i => i.id === id);
+  if (!item || !item.imgs || item.imgs.length <= 1) return;
+  const thumbDiv = e.currentTarget.parentElement;
+  let idx = parseInt(thumbDiv.getAttribute('data-idx') || '0') + dir;
+  if (idx < 0) idx = item.imgs.length - 1;
+  if (idx >= item.imgs.length) idx = 0;
+  thumbDiv.setAttribute('data-idx', idx);
+  thumbDiv.querySelector('.c-img').src = item.imgs[idx];
+  const indicator = thumbDiv.querySelector('.thumb-indicator');
+  if (indicator) indicator.textContent = `${idx + 1} / ${item.imgs.length}`;
+};
+
+function makeCard(item, isWishlistContext = false) {
+  const div = document.createElement('div');
+  div.className = 'item-card';
+  div.onclick = () => openDetail(item.id);
+
+  let imgHTML = `<div class="card-thumb-placeholder">🐱</div>`;
+  if (item.imgs && item.imgs.length > 0) {
+    imgHTML = `<img class="c-img" src="${item.imgs[0]}" alt="${item.name}"/>`;
+    if (item.imgs.length > 1) {
+      imgHTML += `<button class="thumb-nav-btn t-left" onclick="cycleThumb(event, '${item.id}', -1)">❮</button><button class="thumb-nav-btn t-right" onclick="cycleThumb(event, '${item.id}', 1)">❯</button><div class="thumb-indicator">1 / ${item.imgs.length}</div>`;
+    }
+  }
+
+  const bWish  = currentLang === 'ja' ? '💜 ウィッシュ' : '💜 願望清單';
+  const bOwned = currentLang === 'ja' ? '✅ 所持中' : '✅ 已擁有';
+  const preorderText = currentLang === 'ja' ? '🚚 未到着' : '🚚 預購未到';
+  const isPreorderNotArrived = item.status === 'owned' && item.arrival === '未到着';
+  const statusBadge = item.status === 'wishlist' ? `<div class="card-status-badge badge-wish">${bWish}</div>` : (isPreorderNotArrived ? `<div class="card-status-badge badge-preorder">${preorderText}</div>` : `<div class="card-status-badge badge-owned">${bOwned}</div>`);
+  const favBtn = `<button class="fav-btn ${item.fav ? 'is-fav' : ''}" onclick="toggleFav(event, '${item.id}')">${item.fav ? '♥' : '♡'}</button>`;
+  
+  const bottom = item.status === 'owned'
+    ? `<span style="color:${item.fav ? '#ff4d6d' : 'var(--muted)'}">${item.fav ? '♥' : '♡'}</span><span>${item.price ? '¥' + Number(item.price).toLocaleString() : '—'}</span>`
+    : `<span style="color:var(--wishlist)">${t(item.priority) || '—'}</span><span>${item.budget ? '~¥' + Number(item.budget).toLocaleString() : '—'}</span>`;
+
+  const dispType = item.itemType === 'その他' && item.customType ? `${t('その他')} - ${item.customType}` : t(item.itemType);
+  
+  // Custom Series display logic
+  let dispSeries = '';
+  if (item.series) {
+    if (item.series === 'その他' && item.customSeries) {
+      dispSeries = item.customSeries;
+    } else {
+      dispSeries = t(item.series) + (item.customSeries ? ' ' + item.customSeries : '');
+    }
+  }
+
+  const tagType = item.itemType === 'その他' && item.customType ? item.customType : t(item.itemType);
+
+  let gotItHTML = '';
+  if (isWishlistContext && item.status === 'owned') {
+    div.classList.add('got-it-card');
+    gotItHTML = `<div class="got-it-overlay"><div class="got-it-badge">✨ <span class="ja">入手済み</span><span class="zh">已入手</span> ✨</div></div>`;
+  }
+
+  div.innerHTML = `<div class="card-thumb" data-idx="0">${imgHTML}${statusBadge}${favBtn}<div class="card-qty-badge">×${item.qty || 1}</div></div><div class="card-body"><div class="card-name">${item.name}</div><div class="card-type">${dispType}${dispSeries ? ' · ' + dispSeries : ''}</div><div class="card-tags"><span class="ctag ctag-red">${currentLang==='ja' ? '黒尾鉄朗' : '黑尾鐵朗'}</span><span class="ctag">${tagType}</span>${item.cond ? `<span class="ctag">${t(item.cond)}</span>` : ''}</div></div><div class="card-footer">${bottom}</div>${gotItHTML}`;
+  return div;
+}
+
+function render() {
+  const q = (document.getElementById('search-col')?.value || '').toLowerCase().trim();
+  const type = document.getElementById('flt-type')?.value || '';
+  const sort = document.getElementById('flt-sort')?.value || 'newest';
+  const grid = document.getElementById('grid-col');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  let list = items.filter(i => i.status === 'owned' && (!type || ((i.itemType === 'その他' && i.customType) ? i.customType : i.itemType) === type));
+  if (q) list = list.filter(i => (i.name||'').toLowerCase().includes(q) || (i.series||'').toLowerCase().includes(q) || t(i.series||'').toLowerCase().includes(q) || (i.customSeries||'').toLowerCase().includes(q));
+
+  list.sort((a, b) => {
+    if (sort === 'name') return (a.name||'').localeCompare(b.name||'');
+    if (sort === 'price') return (b.price||0) - (a.price||0);
+    if (sort === 'qty') return (b.qty||1) - (a.qty||1);
+    return (b._ts||0) - (a._ts||0);
+  });
+
+  if (!list.length) grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-msg"><span class="ja">まだアイテムがありません。</span><span class="zh">暫無物品。</span></div></div>`;
+  else list.forEach(i => grid.appendChild(makeCard(i, false)));
+  updateStats();
+}
+
+function renderWish() {
+  const q = (document.getElementById('search-wish')?.value || '').toLowerCase().trim();
+  const pri = document.getElementById('flt-priority')?.value || '';
+  const grid = document.getElementById('grid-wish');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  let list = items.filter(i => (i.status === 'wishlist' || (i.status === 'owned' && i.wasWishlist)) && (!pri || i.priority === pri));
+  if (q) list = list.filter(i => (i.name||'').toLowerCase().includes(q) || (i.series||'').toLowerCase().includes(q) || (i.customSeries||'').toLowerCase().includes(q));
+  list.sort((a, b) => a.status === 'owned' && b.status === 'wishlist' ? 1 : (a.status === 'wishlist' && b.status === 'owned' ? -1 : (b._ts||0) - (a._ts||0)));
+
+  if (!list.length) grid.innerHTML = `<div class="empty-state"><div class="empty-icon">💜</div><div class="empty-msg"><span class="ja">ウィッシュリストは空です。</span><span class="zh">願望清單為空。</span></div></div>`;
+  else list.forEach(i => grid.appendChild(makeCard(i, true)));
+  updateWishStats();
+}
+
+function updateStats() {
+  const owned = items.filter(i => i.status === 'owned');
+  document.getElementById('s-total').textContent = items.length;
+  document.getElementById('s-owned').textContent = owned.length;
+  document.getElementById('s-qty').textContent   = owned.reduce((s, i) => s + (i.qty||1), 0);
+  document.getElementById('s-spend').textContent = '¥' + owned.reduce((s, i) => s + Number(i.price||0) * (i.qty||1), 0).toLocaleString();
+}
+
+function updateWishStats() {
+  const wishItems = items.filter(i => i.status === 'wishlist');
+  document.getElementById('w-total').textContent = wishItems.length;
+  document.getElementById('w-budget').textContent = '¥' + wishItems.reduce((s, i) => s + Number(i.budget||0), 0).toLocaleString();
+  document.getElementById('w-got').textContent = items.filter(i => i.status === 'owned' && i.wasWishlist).length;
+}
+
+// --- 🔍 RECENT SEARCHES LOGIC ---
+let recentSearches = JSON.parse(localStorage.getItem('kuroo-recent-searches') || '[]');
+
+function saveRecentSearch(query) {
+  if (!query) return;
+  recentSearches = recentSearches.filter(q => q !== query);
+  recentSearches.unshift(query);
+  if (recentSearches.length > 5) recentSearches.pop(); 
+  localStorage.setItem('kuroo-recent-searches', JSON.stringify(recentSearches));
+  updateRecentList();
+}
+
+function removeRecentSearch(query) {
+  recentSearches = recentSearches.filter(q => q !== query);
+  localStorage.setItem('kuroo-recent-searches', JSON.stringify(recentSearches));
+  updateRecentList();
+}
+
+function updateRecentList() {
+  const container = document.getElementById('recent-list');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  if (recentSearches.length === 0) {
+    container.innerHTML = `<span style="font-size:0.8rem; color:var(--muted);"><span class="ja">検索履歴なし</span><span class="zh">無搜尋紀錄</span></span>`;
+    container.querySelector('.zh').style.display = currentLang === 'ja' ? 'none' : 'inline';
+    container.querySelector('.ja').style.display = currentLang === 'zh' ? 'none' : 'inline';
+    return;
+  }
+
+  recentSearches.forEach(q => {
+    const div = document.createElement('div');
+    div.className = 'recent-item';
+    div.innerHTML = `
+      <span class="recent-item-icon">🔍</span>
+      <span class="recent-item-text" style="cursor:pointer">${q}</span>
+      <button class="recent-item-x" onclick="removeRecentSearch('${q}')">✕</button>
+    `;
+    div.querySelector('.recent-item-text').onclick = () => {
+      document.getElementById('search-col').value = q;
+      render();
+    };
+    container.appendChild(div);
+  });
+}
+
+// --- 🏷️ TAG CLOUD LOGIC ---
+function updateTagCloud() {
+  const container = document.getElementById('tag-cloud');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const owned = items.filter(i => i.status === 'owned');
+  const tagCounts = {};
+
+  owned.forEach(i => {
+    const typeName = (i.itemType === 'その他' && i.customType) ? i.customType : t(i.itemType);
+    if (typeName) {
+      tagCounts[typeName] = (tagCounts[typeName] || 0) + 1;
+    }
+  });
+
+  const uniqueTags = Object.keys(tagCounts);
+  if (uniqueTags.length === 0) {
+    container.innerHTML = `<span style="font-size:0.8rem; color:var(--muted);"><span class="ja">タグがありません</span><span class="zh">尚無標籤</span></span>`;
+    container.querySelector('.zh').style.display = currentLang === 'ja' ? 'none' : 'inline';
+    container.querySelector('.ja').style.display = currentLang === 'zh' ? 'none' : 'inline';
+    return;
+  }
+
+  Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1]) 
+    .forEach(([tag, count]) => {
+      const chip = document.createElement('div');
+      chip.className = 'tag-chip';
+      chip.textContent = `${tag} (${count})`;
+      chip.onclick = () => {
+        document.getElementById('search-col').value = tag;
+        render(); 
+      };
+      container.appendChild(chip);
+  });
+}
+
+// --- 💴 SIDEBAR MANAGER ---
+function updateSidebar() {
+  const owned = items.filter(i => i.status === 'owned');
+  const wish  = items.filter(i => i.status === 'wishlist');
+  const co = owned.reduce((s, i) => s + Number(i.price||0) * (i.qty||1), 0);
+  const cw = wish.reduce((s, i)  => s + Number(i.budget||0), 0);
+  document.getElementById('cost-owned').textContent = '¥' + co.toLocaleString();
+  document.getElementById('cost-wish').textContent  = '¥' + cw.toLocaleString();
+  document.getElementById('cost-total').textContent = '¥' + (co+cw).toLocaleString();
+  
+  updateRecentList();
+  updateTagCloud();
+}
+
+/* ══════════════════════════════
+   DASHBOARD FUNCTIONS
+══════════════════════════════ */
+function renderDashboard() { renderCalendar(); renderChart(); }
+function changeMonth(dir) { dashMonth += dir; if(dashMonth > 11) { dashMonth = 0; dashYear++; } if(dashMonth < 0) { dashMonth = 11; dashYear--; } renderCalendar(); }
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  const title = document.getElementById('cal-month-title');
+  if(!grid) return;
+  title.textContent = `${dashYear}年 ${dashMonth + 1}月`;
+  grid.innerHTML = '';
+  const days = currentLang === 'ja' ? ['日','月','火','水','木','金','土'] : ['日','一','二','三','四','五','六'];
+  days.forEach(d => { const el = document.createElement('div'); el.className = 'cal-day-name'; el.textContent = d; grid.appendChild(el); });
+  const firstDay = new Date(dashYear, dashMonth, 1).getDay();
+  const daysInMonth = new Date(dashYear, dashMonth + 1, 0).getDate();
+  for(let i=0; i<firstDay; i++) { const el = document.createElement('div'); el.className = 'cal-cell is-empty'; grid.appendChild(el); }
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === dashYear && today.getMonth() === dashMonth;
+  for(let i=1; i<=daysInMonth; i++) {
+    const el = document.createElement('div'); el.className = 'cal-cell';
+    if(isCurrentMonth && today.getDate() === i) el.classList.add('cal-today');
+    const dateStr = `${dashYear}-${String(dashMonth+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+    
+    // Check release date (fallback to old purchase date if release is empty)
+    const boughtItems = items.filter(it => it.status === 'owned' && (it.release || it.date) === dateStr);
+    
+    el.innerHTML = `<span>${i}</span>`;
+    if(boughtItems.length > 0) { el.classList.add('has-item'); el.innerHTML += `<div class="cal-dot"></div>`; }
+    el.onclick = () => showDateInfo(dateStr, boughtItems);
+    grid.appendChild(el);
+  }
+}
+
+function showDateInfo(dateStr, boughtItems) {
+  const info = document.getElementById('cal-selected-info');
+  if(boughtItems.length === 0) { info.innerHTML = `<div style="color:var(--muted); padding-top: 0.5rem;"><span class="ja">${dateStr}: 発売情報なし</span><span class="zh">${dateStr}: 無發售資訊</span></div>`; return; }
+  let html = `<div style="margin-bottom:0.5rem; font-weight:bold;">${dateStr}</div>`;
+  boughtItems.forEach(it => { html += `<div class="cal-item-row"><div style="font-weight:600;">${it.name} <span style="font-weight:normal; color:var(--muted); font-size: 0.75rem;">(×${it.qty || 1})</span></div><div class="cal-item-price">¥${((it.price || 0) * (it.qty || 1)).toLocaleString()}</div></div>`; });
+  info.innerHTML = html;
+}
+
+function renderChart() {
+  const chart = document.getElementById('spend-chart');
+  document.getElementById('chart-year-label').textContent = dashYear;
+  document.getElementById('chart-year-zh-label').textContent = dashYear;
+  if(!chart) return;
+  chart.innerHTML = '';
+  const monthlySpend = new Array(12).fill(0);
+  items.forEach(it => {
+    const targetDate = it.release || it.date; // fallback for backwards compatibility
+    if(it.status === 'owned' && targetDate) {
+      const [y, m, d] = targetDate.split('-');
+      if(parseInt(y) === dashYear) monthlySpend[parseInt(m) - 1] += Number(it.price || 0) * (it.qty || 1);
+    }
+  });
+  const maxSpend = Math.max(...monthlySpend, 1000); 
+  for(let i=0; i<12; i++) {
+    const heightPct = (monthlySpend[i] / maxSpend) * 100;
+    const wrap = document.createElement('div'); wrap.className = 'chart-bar-wrap';
+    wrap.innerHTML = `<div class="chart-tooltip">${i+1}${currentLang === 'ja' ? '月' : '月'}: ¥${monthlySpend[i].toLocaleString()}</div><div class="chart-bar" style="height: ${heightPct}%"></div><div class="chart-label">${i+1}</div>`;
+    chart.appendChild(wrap);
+  }
+}
+
+/* ══════════════════════════════
+   DATA MANAGEMENT
+══════════════════════════════ */
+function exportData() {
+  const dataStr = JSON.stringify(items);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `kuroo_collection_backup_${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('💾 バックアップをダウンロードしました', '💾 已下載備份檔案', 'ok');
+}
+
+function triggerImport() { document.getElementById('import-file').click(); }
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(event) {
+    try {
+      const importedData = JSON.parse(event.target.result);
+      if (Array.isArray(importedData)) {
+        items = importedData;
+        toast('⏳ クラウドへ同期中…', '⏳ 正在同步至雲端…', 'ok');
+        await saveToCloud(null); 
+        render(); renderWish(); updateSidebar(); updateWishStats();
+        if(document.getElementById('page-dash').classList.contains('active')) renderDashboard();
+        toast('✅ データを復元・同期しました', '✅ 資料已成功還原並同步', 'ok');
+      }
+    } catch (err) { toast('❌ 無効なファイルです', '❌ 無效的備份檔案', 'del'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+/* ══════════════════════════════
+   FORMS, COMPRESSION, AND SCRAPING
+══════════════════════════════ */
+function openForm(status) {
+  editId = null; curQty = 1; curImgs = []; formSt = status || 'owned';
+  document.getElementById('form-title').innerHTML = '<span class="ja">アイテムを追加</span><span class="zh">新增物品</span>';
+  document.getElementById('btn-del').style.display = 'none';
+  ['f-name','f-price','f-budget','f-notes','f-shop','f-url','f-type-custom','f-series-custom', 'f-release'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-type').value = '缶バッジ'; document.getElementById('f-series').value = '';
+  document.getElementById('f-cond').value = 'ほぼ新品'; document.getElementById('f-priority').value = '🔥 最優先';
+  document.getElementById('f-arrival').value = '到着済み'; document.getElementById('file-input').value = '';
+  setQtyDisplay(1); setStatus(formSt); toggleCustomType(); renderFormImgs();
+  document.getElementById('ov-form').classList.add('open');
+}
+
+function openEditForm(id) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  editId = id; curQty = item.qty||1; curImgs = item.imgs ? [...item.imgs] : []; formSt = item.status || 'owned';
+  document.getElementById('form-title').innerHTML = '<span class="ja">アイテムを編集</span><span class="zh">編輯物品</span>';
+  document.getElementById('btn-del').style.display = 'inline-flex';
+  document.getElementById('f-name').value = item.name || ''; 
+  document.getElementById('f-price').value = item.price || '';
+  document.getElementById('f-budget').value = item.budget || ''; 
+  document.getElementById('f-notes').value = item.notes || ''; 
+  document.getElementById('f-shop').value = item.shop || '';
+  document.getElementById('f-url').value = item.url || ''; 
+  document.getElementById('f-release').value = item.release || '';
+  document.getElementById('f-arrival').value = item.arrival || '到着済み';
+  document.getElementById('f-type').value = item.itemType|| '缶バッジ'; document.getElementById('f-type-custom').value = item.customType || '';
+  document.getElementById('f-series').value = item.series || ''; document.getElementById('f-series-custom').value = item.customSeries || '';
+  document.getElementById('f-cond').value = item.cond || 'ほぼ新品'; document.getElementById('f-priority').value= item.priority|| '🔥 最優先';
+  setQtyDisplay(curQty); setStatus(formSt); toggleCustomType(); renderFormImgs();
+  document.getElementById('ov-detail').classList.remove('open'); document.getElementById('ov-form').classList.add('open');
+}
+
+function closeForm() { document.getElementById('ov-form').classList.remove('open'); }
+function setStatus(s) {
+  formSt = s;
+  document.getElementById('tb-owned').className = 'stoggle-btn' + (s==='owned' ? ' sel-owned' : '');
+  document.getElementById('tb-wishlist').className = 'stoggle-btn' + (s==='wishlist' ? ' sel-wishlist' : '');
+  document.getElementById('owned-fields').style.display = s==='owned' ? 'block' : 'none';
+  document.getElementById('wish-fields').style.display = s==='wishlist' ? 'block' : 'none';
+}
+function setQtyDisplay(n) { 
+  curQty = Math.max(1, parseInt(n) || 1); 
+  document.getElementById('qty-display').value = curQty; 
+}
+function adjustQty(d) { setQtyDisplay(curQty + d); }
+
+// DOUBLE AGENT AUTO-FILL
+async function autofillFromUrl() {
+  const url = document.getElementById('f-url').value.trim();
+  if (!url) { toast('⚠️ URLを入力してください', '⚠️ 請輸入連結', 'del'); return; }
+  try { new URL(url); } catch { toast('⚠️ URL形式が正しくありません', '⚠️ 連結格式不正確', 'del'); return; }
+  
+  toast('⏳ 情報を取得中… (Searching...)', '⏳ 讀取中… (Searching...)', 'ok');
+  let title = '', image = '', price = '';
+
+  try {
+    const mlRes = await fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}`);
+    if (mlRes.ok) {
+      const mlJson = await mlRes.json();
+      if (mlJson.data) {
+        title = mlJson.data.title || '';
+        if (mlJson.data.image && mlJson.data.image.url) image = mlJson.data.image.url;
+      }
+    }
+  } catch (e) { }
+
+  if (!title || !price) {
+    try {
+      let html = '';
+      try {
+        const proxy1 = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+        if (proxy1.ok) html = await proxy1.text();
+      } catch(e) {}
+
+      if (!html) {
+         const proxy2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+         if (proxy2.ok) { const json = await proxy2.json(); html = json.contents; }
+      }
+
+      if (html) {
+        const parser = new DOMParser(); const doc = parser.parseFromString(html, "text/html");
+        if (!title) title = doc.querySelector('title')?.innerText || doc.querySelector('meta[property="og:title"]')?.content || doc.querySelector('.goods-name')?.innerText || '';
+        if (!image) image = doc.querySelector('meta[property="og:image"]')?.content || '';
+
+        const priceMeta = doc.querySelector('meta[property="product:price:amount"], [itemprop="price"], .price, .selling-price');
+        if (priceMeta) price = priceMeta.content || priceMeta.innerText;
+
+        if (!price) {
+          const priceNodes = doc.querySelectorAll('mer-price, .price, #price, [class*="price" i]');
+          for (let node of priceNodes) {
+            let text = node.getAttribute('price') || node.innerText;
+            if (text) {
+              const match = text.match(/[¥￥]\s*([0-9,]+)|([0-9,]+)\s*(円|JPY|税込)/);
+              if (match) { price = match[1] || match[2]; break; }
+            }
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  let success = false;
+  if (title) { title = title.split('|')[0].trim(); document.getElementById('f-name').value = title; success = true; }
+  if (image && image.startsWith('http')) { curImgs = [image, ...curImgs]; renderFormImgs(); success = true; }
+  if (price) {
+    const cleanPrice = price.replace(/[^0-9]/g, '');
+    if (cleanPrice && parseInt(cleanPrice) > 0) {
+      document.getElementById('f-price').value = cleanPrice;
+      document.getElementById('f-budget').value = cleanPrice;
+      success = true;
+    }
+  }
+
+  if (success) toast('✅ 取得に成功しました', '✅ 已成功自動帶入', 'ok');
+  else toast('❌ サイトのセキュリティにより取得できませんでした', '❌ 網站安全阻擋，請手動輸入', 'del');
+}
+
+function compressImage(file, maxWidth, maxHeight, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        let width = img.width; let height = img.height;
+        if (width > height) { if (width > maxWidth) { height = Math.round((height *= maxWidth / width)); width = maxWidth; } } 
+        else { if (height > maxHeight) { width = Math.round((width *= maxHeight / height)); height = maxHeight; } }
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject; img.src = event.target.result;
+    };
+    reader.onerror = reject; reader.readAsDataURL(file);
+  });
+}
+
+function handleImg(e) {
+  const files = Array.from(e.target.files || e.dataTransfer.files);
+  if (!files.length) return;
+  toast('⏳ 画像を圧縮中…', '⏳ 圖片壓縮中…', 'ok');
+  Promise.all(files.map(file => compressImage(file, 800, 800, 0.7)))
+    .then(results => { curImgs.push(...results); renderFormImgs(); })
+    .catch(err => { toast('❌ 画像の処理に失敗しました', '❌ 圖片處理失敗', 'del'); });
+}
+
+function renderFormImgs() {
+  const container = document.getElementById('img-preview-container');
+  const hint = document.getElementById('upload-hint-content');
+  container.innerHTML = '';
+  if (curImgs.length > 0) {
+    hint.style.display = 'none';
+    curImgs.forEach((src, idx) => {
+      const box = document.createElement('div'); box.className = 'preview-box'; box.onclick = (e) => e.stopPropagation();
+      box.innerHTML = `<img src="${src}" /><button class="rm-btn" onclick="removeFormImg(event, ${idx})">✕</button>`;
+      container.appendChild(box);
+    });
+  } else { hint.style.display = 'block'; }
+}
+
+function removeFormImg(e, idx) { e.stopPropagation(); curImgs.splice(idx, 1); renderFormImgs(); }
+
+async function saveItem() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('⚠️ 商品名を入力してください', '⚠️ 請輸入商品名稱', 'del'); return; }
+  
+  const existingItem = editId ? items.find(i => i.id === editId) : null;
+  const itemTypeSelect = document.getElementById('f-type').value;
+  const seriesSelect = document.getElementById('f-series').value;
+
+  const item = {
+    id: editId || uid(), _ts: Date.now(), status: formSt,
+    wasWishlist: existingItem ? existingItem.wasWishlist : false, fav: existingItem ? !!existingItem.fav : false,
+    imgs: curImgs, name, qty: curQty, itemType: itemTypeSelect,
+    customType: itemTypeSelect === 'その他' ? document.getElementById('f-type-custom').value.trim() : '',
+    series: seriesSelect, 
+    customSeries: document.getElementById('f-series-custom').value.trim(),
+    release: document.getElementById('f-release').value, arrival: document.getElementById('f-arrival').value,
+    url: document.getElementById('f-url').value.trim(), price: document.getElementById('f-price').value || '',
+    date: existingItem ? existingItem.date : '', // Keep old date if it exists for backwards compatibility
+    cond: document.getElementById('f-cond').value,
+    shop: document.getElementById('f-shop').value.trim(), budget: document.getElementById('f-budget').value || '',
+    priority: document.getElementById('f-priority').value, notes: document.getElementById('f-notes').value.trim(),
+  };
+
+  try {
+    if (editId) { 
+      items[items.findIndex(i => i.id === editId)] = item; 
+      toast('✅ アイテムを更新しました', '✅ 物品已更新', 'ok'); 
+    } else { 
+      items.push(item); 
+      formSt === 'wishlist' ? toast('💜 ウィッシュリストに追加しました', '💜 已添加到願望清單', 'wish') : toast('✅ コレクションに追加しました', '✅ 已添加到收藏', 'ok'); 
+    }
+    
+    // Save securely to cloud
+    await saveToCloud(item);
+    
+    closeForm(); updateSidebar(); render(); renderWish();
+    if(document.getElementById('page-dash').classList.contains('active')) renderDashboard();
+  } catch (error) {
+    toast('❌ エラーが発生しました', '❌ 發生錯誤', 'del');
+  }
+}
+
+async function deleteItem() {
+  if (!editId) return;
+  items = items.filter(i => i.id !== editId);
+  await saveToCloud(null, true, editId);
+  closeForm(); updateSidebar(); render(); renderWish();
+  if(document.getElementById('page-dash').classList.contains('active')) renderDashboard();
+  toast('🗑 削除しました', '🗑 已刪除', 'del');
+}
+
+function openDetail(id) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  detailId = id; currentDetailIdx = 0;
+
+  const bWish = currentLang === 'ja' ? '💜 ウィッシュ' : '💜 願望清單';
+  const bOwned = currentLang === 'ja' ? '✅ 所持中' : '✅ 已擁有';
+  const bdg = item.status === 'wishlist' ? `<span class="d-badge-wish">${bWish}</span>` : `<span class="d-badge-owned">${bOwned}</span>`;
+  const dispType = item.itemType === 'その他' && item.customType ? item.customType : t(item.itemType);
+  
+  let dispSeries = '—';
+  if (item.series) {
+    if (item.series === 'その他' && item.customSeries) {
+      dispSeries = item.customSeries;
+    } else {
+      dispSeries = t(item.series) + (item.customSeries ? ' ' + item.customSeries : '');
+    }
+  }
+
+  let heroHTML = `<div class="detail-hero-placeholder">🐱</div>`;
+  if (item.imgs && item.imgs.length > 0) {
+    heroHTML = `<img id="detail-hero-img" class="detail-hero-img" src="${item.imgs[0]}" onclick="openLightbox('${id}', 0)"/>`;
+    if (item.imgs.length > 1) {
+      heroHTML += `<button class="thumb-nav-btn t-left" onclick="cycleDetailImg('${id}', -1)">❮</button><button class="thumb-nav-btn t-right" onclick="cycleDetailImg('${id}', 1)">❯</button><div class="thumb-indicator" id="detail-img-ind">1 / ${item.imgs.length}</div>`;
+    }
+  }
+
+  let gridHTML = '';
+  if (item.status === 'owned') {
+    gridHTML = `
+      <div class="dg-item"><div class="dg-label"><span class="ja">購入価格</span><span class="zh">購買價格</span></div><div class="dg-val" style="color:var(--gold)">${item.price ? '¥' + Number(item.price).toLocaleString() : '—'}</div></div>
+      <div class="dg-item"><div class="dg-label"><span class="ja">発売日</span><span class="zh">發售日</span></div><div class="dg-val">${item.release || '—'}</div></div>
+      <div class="dg-item"><div class="dg-label"><span class="ja">状態</span><span class="zh">狀態</span></div><div class="dg-val">${t(item.cond) || '—'}</div></div>
+      <div class="dg-item"><div class="dg-label"><span class="ja">購入先</span><span class="zh">購買管道</span></div><div class="dg-val">${item.shop || '—'}</div></div>
+      <div class="dg-item"><div class="dg-label"><span class="ja">到着状況</span><span class="zh">到貨狀態</span></div><div class="dg-val">${t(item.arrival) || '—'}</div></div>`;
+  } else {
+    gridHTML = `
+      <div class="dg-item"><div class="dg-label"><span class="ja">必要予算</span><span class="zh">所需預算</span></div><div class="dg-val" style="color:var(--gold)">${item.budget ? '¥' + Number(item.budget).toLocaleString() : '—'}</div></div>
+      <div class="dg-item"><div class="dg-label"><span class="ja">優先度</span><span class="zh">優先級</span></div><div class="dg-val">${t(item.priority) || '—'}</div></div>`;
+  }
+
+  document.getElementById('detail-inner').innerHTML = `
+    <div class="detail-hero-img-wrap">${heroHTML}</div>
+    <div class="detail-body">
+      <div style="margin-bottom:0.8rem">${bdg} <span style="font-weight:bold; color:var(--muted); margin-left:0.5rem">×${item.qty || 1}</span></div>
+      <div class="detail-title">${item.name}</div>
+      <div class="detail-sub">${dispType} ${dispSeries !== '—' ? ' · ' + dispSeries : ''}</div>
+      <div class="detail-grid">${gridHTML}</div>
+      ${item.url ? `<div style="margin-bottom:1.2rem"><a href="${item.url}" target="_blank" style="color:var(--accent); text-decoration:none; font-size:0.85rem; display:inline-flex; align-items:center; gap:0.3rem">🔗 <span class="ja">URLを開く</span><span class="zh">開啟連結</span></a></div>` : ''}
+      ${item.notes ? `<div class="dg-item"><div class="dg-label"><span class="ja">メモ</span><span class="zh">備註</span></div><div style="font-size:0.88rem; white-space:pre-wrap; color:var(--text); line-height:1.4">${item.notes}</div></div>` : ''}
+    </div>`;
+  
+  document.getElementById('btn-mark-buy').style.display = item.status === 'wishlist' ? 'inline-flex' : 'none';
+  document.getElementById('ov-detail').classList.add('open');
+}
+
+window.cycleDetailImg = function(id, dir) {
+  const item = items.find(i => i.id === id);
+  if (!item || !item.imgs) return;
+  currentDetailIdx += dir;
+  if (currentDetailIdx < 0) currentDetailIdx = item.imgs.length - 1;
+  if (currentDetailIdx >= item.imgs.length) currentDetailIdx = 0;
+  document.getElementById('detail-hero-img').src = item.imgs[currentDetailIdx];
+  document.getElementById('detail-hero-img').setAttribute('onclick', `openLightbox('${id}', ${currentDetailIdx})`);
+  document.getElementById('detail-img-ind').textContent = `${currentDetailIdx + 1} / ${item.imgs.length}`;
+};
+
+function closeDetail() { document.getElementById('ov-detail').classList.remove('open'); }
+function editFromDetail() { openEditForm(detailId); }
+function deleteFromDetail() { editId = detailId; deleteItem(); closeDetail(); }
+
+window.markAsPurchased = async function() {
+  if (!detailId) return;
+  const item = items.find(i => i.id === detailId);
+  if (!item) return;
+  item.wasWishlist = true;
+  await saveToCloud(item);
+  closeDetail(); openEditForm(detailId); setStatus('owned');
+  toast('購入情報を入力して保存してください', '請輸入購買資訊並儲存', 'ok');
+};
+
+let lbId = null, lbIdx = 0;
+window.openLightbox = function(id, idx) { lbId = id; lbIdx = idx; updateLightbox(); document.getElementById('ov-lightbox').classList.add('open'); }
+window.closeLightbox = function() { document.getElementById('ov-lightbox').classList.remove('open'); }
+window.cycleLightbox = function(e, dir) { e.stopPropagation(); const item = items.find(i => i.id === lbId); if(!item || !item.imgs) return; lbIdx += dir; if(lbIdx < 0) lbIdx = item.imgs.length - 1; if(lbIdx >= item.imgs.length) lbIdx = 0; updateLightbox(); }
+function updateLightbox() { const item = items.find(i => i.id === lbId); document.getElementById('lb-img').src = item.imgs[lbIdx]; document.getElementById('lb-ind').textContent = `${lbIdx + 1} / ${item.imgs.length}`; }
+
+// 🚀 START THE APP AND SYNC WITH SUPABASE
+initApp();
+</script>
+</body>
+</html>
