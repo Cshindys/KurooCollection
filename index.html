@@ -167,10 +167,19 @@
         linear-gradient(to top, rgba(30,10,40,0.85) 0%, rgba(30,10,40,0.25) 40%, transparent 70%);
     }
 
+    .hero-days-badge {
+      position: absolute; top: 1.5rem; right: 2rem; z-index: 10;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+      color: rgba(255,255,255,0.9); font-weight: 500; padding: 0.6rem 1.2rem;
+      border-radius: 30px; border: 1px solid rgba(255,255,255,0.15);
+      font-size: 0.85rem; letter-spacing: 0.05em; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .hero-days-badge b { color: #ffccd5; font-size: 1.1rem; margin: 0 0.2rem; font-family: 'Noto Serif JP', serif; }
+
     .hero-content {
       position: absolute; inset: 0; z-index: 2;
       display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 2.5rem 3rem 2.5rem 3rem; max-width: 640px;
+      padding: 2.5rem 3rem 2.5rem 3rem; max-width: 680px;
       pointer-events: none;
     }
 
@@ -205,10 +214,28 @@
       margin-bottom: 0.6rem; letter-spacing: 0.12em; font-weight: 300;
     }
 
-    .hero-event-name {
-      font-family: 'Noto Serif JP', serif; font-size: 1.3rem; font-weight: 600;
-      color: #ffd4a0; margin-bottom: 1.2rem; text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    /* TYPEWRITER QUOTE BOX */
+    .hero-quote-box {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ffd4a0;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+      min-height: 3.2rem; 
+      line-height: 1.5;
+      letter-spacing: 0.05em;
     }
+
+    .hero-quote-box .cursor {
+      display: inline-block;
+      width: 3px;
+      color: #fff;
+      margin-left: 4px;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
     .hero-meta-row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.6rem; pointer-events: auto; }
 
@@ -235,24 +262,11 @@
 
     .h-stat-label { font-size: 0.65rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; }
 
-    .hero-right-tags {
-      position: absolute; right: 2rem; bottom: 2.5rem; z-index: 2;
-      display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end;
-    }
-
-    .hero-rtag {
-      display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.4);
-      border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.35rem 0.8rem;
-      font-size: 0.75rem; color: rgba(255,230,200,0.9); backdrop-filter: blur(6px);
-    }
-
-    .rtag-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-
     /* ══════════════════════════════
        DASHBOARD CALENDAR & CHARTS
     ══════════════════════════════ */
     .dash-container { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
-    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
     .dash-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(180,100,60,0.06); }
     
     .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -277,6 +291,19 @@
     .chart-label { font-size: 0.75rem; color: var(--muted); margin-top: 8px; font-weight: 600; }
     .chart-tooltip { position: absolute; top: -35px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity 0.2s; white-space: nowrap; pointer-events: none; z-index: 10; font-weight: bold; }
     .chart-bar-wrap:hover .chart-tooltip { opacity: 1; transform: translateY(-5px); }
+    
+    .yearly-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 52px);
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+      width: 100%;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .yearly-gallery::-webkit-scrollbar { width: 6px; height: 6px; }
+    .yearly-gallery::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
     /* ══════════════════════════════
        コンテンツエリア (Content Area)
@@ -305,6 +332,7 @@
       padding: 0.6rem 0.9rem; color: var(--text); font-family: inherit; font-size: 0.82rem; outline: none; cursor: pointer;
     }
     .flt option { background: #fff; color: var(--text); }
+    optgroup { font-weight: 600; color: var(--muted); background: var(--warm1); }
 
     .btn-add {
       display: flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, var(--accent), var(--nekoma2));
@@ -438,7 +466,6 @@
     .qty-btn { width: 34px; height: 34px; background: var(--warm1); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
     .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
     
-    /* Updated Qty Display to be an Input with Fixed Width */
     .qty-display { width: 80px; text-align: center; background: rgba(255,255,255,0.9); border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem; font-size: 1.1rem; font-weight: 700; color: var(--gold); outline: none; }
     .qty-display:focus { border-color: var(--accent); }
     input.qty-display::-webkit-outer-spin-button, input.qty-display::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -489,14 +516,13 @@
       .content-area { grid-template-columns: 1fr; }
       .sidebar { display: none; }
       .hero-banner { height: 400px; }
-      .hero-right-tags { display: none; }
       .dash-grid { grid-template-columns: 1fr; }
     }
     @media(max-width:640px) {
       .hero-banner { height: 320px; }
       .hero-content { padding: 1.5rem; }
       .hero-char-name { font-size: 2.4rem; }
-      .hero-event-name { font-size: 1rem; }
+      .hero-quote-box { font-size: 0.95rem; }
       .hero-stats-row { gap: 0.5rem; }
       .h-stat { min-width: 60px; padding: 0.5rem 0.7rem; }
       .h-stat-num { font-size: 1.2rem; }
@@ -544,12 +570,12 @@
 </nav>
 
 <div id="page-col" class="page active">
-  
   <div class="hero-banner">
     <img class="hero-banner-img" src="HAIKYU!! FLY HIGH!! GACHA.jpeg" alt="Banner"/>
     <video class="hero-banner-vid" src="Hero.mp4" autoplay muted loop playsinline></video>
-    
     <div class="hero-overlay"></div>
+    <div class="hero-days-badge" id="days-badge-col"></div>
+    
     <div class="hero-content">
       <div class="hero-event-badge">
         <div class="badge-dot"></div>
@@ -557,9 +583,11 @@
       </div>
       <div class="hero-char-name"><span>黒尾 鉄朗</span></div>
       <div class="hero-char-romaji">KUROO TETSURŌ</div>
-      <div class="hero-event-name">
-        <span class="ja">🎆 花火大会 Special Edition</span><span class="zh">🎆 煙火大會 Special Edition</span>
+      
+      <div class="hero-quote-box">
+        <span id="hero-quote-text"></span><span class="cursor">|</span>
       </div>
+
       <div class="hero-meta-row">
         <div class="hero-meta-pill"><span class="ja">🏫 音駒高校</span><span class="zh">🏫 音駒高中</span></div>
         <div class="hero-meta-pill"><span class="ja">🏐 ミドルブロッカー #1</span><span class="zh">🏐 攔網員 #1</span></div>
@@ -578,7 +606,7 @@
     <div class="main-col">
       <div class="section-header">
         <div class="section-title"><span class="ja">アイテム一覧</span><span class="zh">物品列表</span></div>
-        <button class="btn-add" onclick="openForm('owned')">
+        <button class="btn-add" onclick="tryOpenForm('owned')">
           <span class="ja">＋ アイテム追加</span><span class="zh">＋ 新增物品</span>
         </button>
       </div>
@@ -588,50 +616,68 @@
           <span class="search-icon">🔍</span>
           <input class="search-input" id="search-col" type="text" data-ph-ja="商品名・シリーズ・タイプで検索…" data-ph-zh="依名稱/系列/類型搜尋…" oninput="render()" onchange="saveRecentSearch(this.value.trim())"/>
         </div>
+        <select class="flt" id="flt-fav-col" onchange="render()">
+          <option value="" data-ja="すべて (お気に入り)" data-zh="全部 (最愛狀態)"></option>
+          <option value="fav" data-ja="♥ お気に入りのみ" data-zh="♥ 僅顯示我的最愛"></option>
+        </select>
+        
         <select class="flt" id="flt-type" onchange="render()">
           <option value="" data-ja="全タイプ" data-zh="全類型"></option>
-          <option value="缶バッジ" data-ja="缶バッジ" data-zh="徽章"></option>
-          <option value="アクリル" data-ja="アクリル" data-zh="壓克力"></option>
-          <option value="アクリルスタンド" data-ja="アクリルスタンド" data-zh="立牌"></option>
-          <option value="アクリルブロック" data-ja="アクリルブロック" data-zh="壓克力磚"></option>
-          <option value="ストラップ" data-ja="ストラップ" data-zh="吊飾"></option>
-          <option value="キーホルダー" data-ja="キーホルダー" data-zh="鑰匙圈"></option>
-          <option value="クリアファイル" data-ja="クリアファイル" data-zh="資料夾"></option>
-          <option value="ポストカード" data-ja="ポストカード" data-zh="明信片"></option>
-          <option value="ぱしゃこれ" data-ja="ぱしゃこれ" data-zh="拍立得"></option>
-          <option value="キャラカード" data-ja="キャラカード" data-zh="小卡"></option>
-          <option value="ポスター" data-ja="ポスター" data-zh="海報"></option>
-          <option value="タペストリー" data-ja="タペストリー" data-zh="掛軸"></option>
-          <option value="コースター" data-ja="コースター" data-zh="杯墊"></option>
-          <option value="マグネット" data-ja="マグネット" data-zh="磁鐵"></option>
-          <option value="ステッカー" data-ja="ステッカー" data-zh="貼紙"></option>
-          <option value="ぬいぐるみ" data-ja="ぬいぐるみ" data-zh="娃娃"></option>
-          <option value="フィギュア" data-ja="フィギュア" data-zh="公仔"></option>
-          <option value="バッグ" data-ja="バッグ" data-zh="包包"></option>
-          <option value="名札" data-ja="名札" data-zh="名牌"></option>
-          <option value="スクエア缶バッジ" data-ja="スクエア缶バッジ" data-zh="方徽"></option>
-          <option value="デコレクション缶バッジ" data-ja="デコレクション缶バッジ" data-zh="浮雕徽章"></option>
-          <option value="レンチキュラー缶バッジ" data-ja="レンチキュラー缶バッジ" data-zh="光珊徽章"></option>
-          <option value="バースデイ缶バッジ" data-ja="バースデイ缶バッジ" data-zh="生日徽章"></option>
-          <option value="アクリルぷちスタンド" data-ja="アクリルぷちスタンド" data-zh="小立牌"></option>
-          <option value="クリアカード" data-ja="クリアカード" data-zh="透卡"></option>
-          <option value="ホロカード" data-ja="ホロカード" data-zh="全息卡"></option>
-          <option value="ステータスカードコレクション" data-ja="ステータスカードコレクション" data-zh="數據卡"></option>
-          <option value="アートカードコレクション" data-ja="アートカードコレクション" data-zh="藝術卡"></option>
-          <option value="メモリアルコレクション" data-ja="メモリアルコレクション" data-zh="回憶相卡"></option>
-          <option value="バースデイカード" data-ja="バースデイカード" data-zh="生日卡"></option>
-          <option value="ふわコロりん" data-ja="ふわコロりん" data-zh="圓滾滾"></option>
-          <option value="ちびぐるみ" data-ja="ちびぐるみ" data-zh="努努"></option>
-          <option value="もちマス" data-ja="もちマス" data-zh="趴娃"></option>
-          <option value="のるキャラマスコット" data-ja="のるキャラマスコット" data-zh="Js趴娃"></option>
-          <option value="ねんどろいど" data-ja="ねんどろいど" data-zh="黏土人"></option>
-          <option value="ガラスマグネット" data-ja="ガラスマグネット" data-zh="玻璃磁鐵"></option>
-          <option value="ミラー風アクリルステッカー" data-ja="ミラー風アクリルステッカー" data-zh="鏡面壓克力貼"></option>
-          <option value="バースデー アクリルブロック" data-ja="バースデー アクリルブロック" data-zh="生日磚"></option>
-          <option value="バースデイ名場面ジオラマフィギュア" data-ja="バースデイ名場面ジオラマフィギュア" data-zh="生日名場面立牌"></option>
-          <option value="プライズフィギュア" data-ja="プライズフィギュア" data-zh="景品模型"></option>
-          <option value="その他" data-ja="その他" data-zh="其他"></option>
+          <optgroup label="バッジ (徽章)">
+            <option value="缶バッジ" data-ja="缶バッジ" data-zh="徽章"></option>
+            <option value="スクエア缶バッジ" data-ja="スクエア缶バッジ" data-zh="方徽"></option>
+            <option value="デコレクション缶バッジ" data-ja="デコレクション缶バッジ" data-zh="浮雕徽章"></option>
+            <option value="レンチキュラー缶バッジ" data-ja="レンチキュラー缶バッジ" data-zh="光珊徽章"></option>
+            <option value="バースデイ缶バッジ" data-ja="バースデイ缶バッジ" data-zh="生日徽章"></option>
+          </optgroup>
+          <optgroup label="アクリル (壓克力)">
+            <option value="アクリル" data-ja="アクリル" data-zh="壓克力"></option>
+            <option value="アクリルスタンド" data-ja="アクリルスタンド" data-zh="立牌"></option>
+            <option value="アクリルぷちスタンド" data-ja="アクリルぷちスタンド" data-zh="小立牌"></option>
+            <option value="アクリルブロック" data-ja="アクリルブロック" data-zh="壓克力磚"></option>
+            <option value="ミラー風アクリルステッカー" data-ja="ミラー風アクリルステッカー" data-zh="鏡面壓克力貼"></option>
+            <option value="バースデー アクリルブロック" data-ja="バースデー アクリルブロック" data-zh="生日磚"></option>
+            <option value="バースデイ名場面ジオラマフィギュア" data-ja="バースデイ名場面ジオラマフィギュア" data-zh="生日名場面立牌"></option>
+          </optgroup>
+          <optgroup label="カード・紙類 (卡片・紙類)">
+            <option value="クリアファイル" data-ja="クリアファイル" data-zh="資料夾"></option>
+            <option value="ポストカード" data-ja="ポストカード" data-zh="明信片"></option>
+            <option value="ぱしゃこれ" data-ja="ぱしゃこれ" data-zh="拍立得"></option>
+            <option value="キャラカード" data-ja="キャラカード" data-zh="小卡"></option>
+            <option value="クリアカード" data-ja="クリアカード" data-zh="透卡"></option>
+            <option value="ホロカード" data-ja="ホロカード" data-zh="全息卡"></option>
+            <option value="ステータスカードコレクション" data-ja="ステータスカードコレクション" data-zh="數據卡"></option>
+            <option value="アートカードコレクション" data-ja="アートカードコレクション" data-zh="藝術卡"></option>
+            <option value="メモリアルコレクション" data-ja="メモリアルコレクション" data-zh="回憶相卡"></option>
+            <option value="バースデイカード" data-ja="バースデイカード" data-zh="生日卡"></option>
+            <option value="ポスター" data-ja="ポスター" data-zh="海報"></option>
+          </optgroup>
+          <optgroup label="ぬいぐるみ・布 (娃娃・布偶)">
+            <option value="タペストリー" data-ja="タペストリー" data-zh="掛軸"></option>
+            <option value="ぬいぐるみ" data-ja="ぬいぐるみ" data-zh="娃娃"></option>
+            <option value="ふわコロりん" data-ja="ふわコロりん" data-zh="圓滾滾"></option>
+            <option value="ちびぐるみ" data-ja="ちびぐるみ" data-zh="努努"></option>
+            <option value="もちマス" data-ja="もちマス" data-zh="趴娃"></option>
+            <option value="のるキャラマスコット" data-ja="のるキャラマスコット" data-zh="Js趴娃"></option>
+          </optgroup>
+          <optgroup label="フィギュア (模型)">
+            <option value="フィギュア" data-ja="フィギュア" data-zh="公仔"></option>
+            <option value="プライズフィギュア" data-ja="プライズフィギュア" data-zh="景品模型"></option>
+            <option value="ねんどろいど" data-ja="ねんどろいど" data-zh="黏土人"></option>
+          </optgroup>
+          <optgroup label="その他 (其他周邊)">
+            <option value="ストラップ" data-ja="ストラップ" data-zh="吊飾"></option>
+            <option value="キーホルダー" data-ja="キーホルダー" data-zh="鑰匙圈"></option>
+            <option value="コースター" data-ja="コースター" data-zh="杯墊"></option>
+            <option value="マグネット" data-ja="マグネット" data-zh="磁鐵"></option>
+            <option value="ガラスマグネット" data-ja="ガラスマグネット" data-zh="玻璃磁鐵"></option>
+            <option value="ステッカー" data-ja="ステッカー" data-zh="貼紙"></option>
+            <option value="バッグ" data-ja="バッグ" data-zh="包包"></option>
+            <option value="名札" data-ja="名札" data-zh="名牌"></option>
+            <option value="その他" data-ja="その他" data-zh="その他"></option>
+          </optgroup>
         </select>
+        
         <select class="flt" id="flt-sort" onchange="render()">
           <option value="newest" data-ja="新着順" data-zh="最新"></option>
           <option value="name" data-ja="名前順" data-zh="名稱"></option>
@@ -665,6 +711,7 @@
   <div class="hero-banner">
     <img class="hero-banner-img" src="646379385_122293609460218649_4795694109541554921_n.jpg" alt="Banner"/>
     <div class="hero-overlay wish-overlay"></div>
+    <div class="hero-days-badge" id="days-badge-wish"></div>
     <div class="hero-content">
       <div class="hero-event-badge" style="background: rgba(123,45,139,0.25); border-color: rgba(123,45,139,0.55); color: #eebbff;">
         <div class="badge-dot" style="background: #b44dcc; box-shadow: 0 0 6px #b44dcc;"></div>
@@ -698,7 +745,7 @@
   <div class="wish-content">
     <div class="section-header">
       <div class="section-title"><span class="ja">ウィッシュアイテム</span><span class="zh">願望物品</span></div>
-      <button class="btn-add" style="background: linear-gradient(135deg, var(--wishlist), var(--wish2)); box-shadow: 0 4px 16px rgba(123,45,139,0.25);" onclick="openForm('wishlist')">
+      <button class="btn-add" style="background: linear-gradient(135deg, var(--wishlist), var(--wish2)); box-shadow: 0 4px 16px rgba(123,45,139,0.25);" onclick="tryOpenForm('wishlist')">
         <span class="ja">＋ 追加する</span><span class="zh">＋ 新增</span>
       </button>
     </div>
@@ -707,6 +754,10 @@
         <span class="search-icon">🔍</span>
         <input class="search-input" id="search-wish" type="text" data-ph-ja="ウィッシュリストを検索…" data-ph-zh="搜尋願望清單…" oninput="renderWish()"/>
       </div>
+      <select class="flt" id="flt-fav-wish" onchange="renderWish()">
+        <option value="" data-ja="すべて (お気に入り)" data-zh="全部 (最愛狀態)"></option>
+        <option value="fav" data-ja="♥ お気に入りのみ" data-zh="♥ 僅顯示我的最愛"></option>
+      </select>
       <select class="flt" id="flt-priority" onchange="renderWish()">
         <option value="" data-ja="全優先度" data-zh="全優先級"></option>
         <option value="🔥 最優先" data-ja="🔥 最優先" data-zh="🔥 最優先"></option>
@@ -737,7 +788,7 @@
         <button class="btn btn-primary" onclick="exportData()" style="flex: 1; min-width: 200px; box-shadow: 0 4px 12px rgba(200,16,46,0.2);">
           ⬇️ <span class="ja">バックアップ (Export)</span><span class="zh">下載備份 (Export)</span>
         </button>
-        <button class="btn btn-ghost" onclick="triggerImport()" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.7);">
+        <button class="btn btn-ghost" onclick="tryImport()" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.7);">
           ⬆️ <span class="ja">データを復元 (Import)</span><span class="zh">匯入還原 (Import)</span>
         </button>
         <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
@@ -761,14 +812,39 @@
 
       <div class="dash-card">
         <div class="cal-header">
+          <button class="btn btn-ghost" onclick="changeChartYear(-1)">❮</button>
           <h3 class="cal-title">
             <span class="ja">月別金額 (<span id="chart-year-label"></span>年)</span>
-            <span class="zh">每月發售商品花費 (<span id="chart-year-zh-label"></span>年)</span>
+            <span class="zh">每月發售花費 (<span id="chart-year-zh-label"></span>年)</span>
           </h3>
+          <button class="btn btn-ghost" onclick="changeChartYear(1)">❯</button>
         </div>
         <div class="chart-container" id="spend-chart"></div>
+        <div class="yearly-gallery" id="yearly-gallery"></div>
       </div>
     </div>
+    
+    <div class="dash-grid" style="margin-top: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+      <div class="dash-card">
+        <div class="cal-header">
+          <h3 class="cal-title">🏆 <span class="ja">コレクション ランキング (単価)</span><span class="zh">高價收藏排行榜 (單項)</span></h3>
+        </div>
+        <div id="rank-expensive" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem;"></div>
+      </div>
+      <div class="dash-card">
+        <div class="cal-header">
+          <h3 class="cal-title">📚 <span class="ja">シリーズ別 トップ5 (所持数)</span><span class="zh">系列收藏 Top 5 (總數)</span></h3>
+        </div>
+        <div id="rank-series" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem;"></div>
+      </div>
+      <div class="dash-card">
+        <div class="cal-header">
+          <h3 class="cal-title">💰 <span class="ja">トップシリーズ (総費用)</span><span class="zh">系列收藏 Top 5 (總花費)</span></h3>
+        </div>
+        <div id="rank-spend" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem;"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -802,75 +878,87 @@
           <input class="fi" id="f-name" type="text" data-ph-ja="例：黒尾鉄朗 1/8スケールフィギュア" data-ph-zh="例：黑尾鐵朗 1/8比例模型"/>
         </div>
         <div class="fg">
-          <label><span class="ja">タイプ</span><span class="zh">類型</span></label>
-          <select class="fi" id="f-type" onchange="toggleCustomType()">
+          <label><span class="ja">シリーズ / エディション</span><span class="zh">系列 / 版本</span></label>
+          <select class="fi" id="f-series" multiple size="5" onchange="handleSeriesChange()" style="height: auto; min-height: 120px; overflow-y: auto; padding: 0.4rem;">
+            <option value="通常版" data-ja="通常版" data-zh="通常版"></option>
+            <option value="バースデイ" data-ja="バースデイ" data-zh="生日"></option>
+            <option value="原画" data-ja="原画" data-zh="原畫"></option>
+            <option value="箔押し" data-ja="箔押し" data-zh="燙金"></option>
+            <option value="セット" data-ja="セット" data-zh="套組"></option>
+            <option value="くじ" data-ja="くじ (一番くじ)" data-zh="抽賞 (一番賞)"></option>
+            <option value="ジャンプフェスタ" data-ja="ジャンプフェスタ" data-zh="Jump Festa"></option>
+            <option value="ハイキュー!!展" data-ja="ハイキュー!!展" data-zh="排球少年！！展"></option>
+            <option value="アニメイト" data-ja="アニメイト" data-zh="安利美特(Animate)"></option>
+            <option value="ジャンプショップ" data-ja="ジャンプショップ" data-zh="Jump Shop"></option>
+            <option value="TOHO animation" data-ja="TOHO animation" data-zh="TOHO animation"></option>
+            <option value="FAN PARK" data-ja="FAN PARK" data-zh="FAN PARK"></option>
+            <option value="極楽湯" data-ja="極楽湯" data-zh="極楽湯"></option>
+            <option value="FLY HIGH!!" data-ja="FLY HIGH!!" data-zh="FLY HIGH!!"></option>
+            <option value="その他" data-ja="その他" data-zh="その他"></option>
+          </select>
+          <input class="fi" id="f-series-custom" type="text" data-ph-ja="詳細（年・賞など）を入力（任意）" data-ph-zh="輸入詳細資訊（年份・獎項等，選填）" style="margin-top:0.5rem;" />
+        </div>
+      </div>
+
+      <div class="fg">
+        <label><span class="ja">タイプ</span><span class="zh">類型</span></label>
+        
+        <select class="fi" id="f-type" onchange="toggleCustomType()">
+          <optgroup label="バッジ (徽章)">
             <option value="缶バッジ" data-ja="缶バッジ" data-zh="徽章"></option>
+            <option value="スクエア缶バッジ" data-ja="スクエア缶バッジ" data-zh="方徽"></option>
+            <option value="デコレクション缶バッジ" data-ja="デコレクション缶バッジ" data-zh="浮雕徽章"></option>
+            <option value="レンチキュラー缶バッジ" data-ja="レンチキュラー缶バッジ" data-zh="光珊徽章"></option>
+            <option value="バースデイ缶バッジ" class="bday-item" data-ja="バースデイ缶バッジ" data-zh="生日徽章"></option>
+          </optgroup>
+          <optgroup label="アクリル (壓克力)">
             <option value="アクリル" data-ja="アクリル" data-zh="壓克力"></option>
             <option value="アクリルスタンド" data-ja="アクリルスタンド" data-zh="立牌"></option>
+            <option value="アクリルぷちスタンド" data-ja="アクリルぷちスタンド" data-zh="小立牌"></option>
             <option value="アクリルブロック" data-ja="アクリルブロック" data-zh="壓克力磚"></option>
-            <option value="ストラップ" data-ja="ストラップ" data-zh="吊飾"></option>
-            <option value="キーホルダー" data-ja="キーホルダー" data-zh="鑰匙圈"></option>
+            <option value="ミラー風アクリルステッカー" data-ja="ミラー風アクリルステッカー" data-zh="鏡面壓克力貼"></option>
+            <option value="バースデー アクリルブロック" class="bday-item" data-ja="バースデー アクリルブロック" data-zh="生日磚"></option>
+            <option value="バースデイ名場面ジオラマフィギュア" class="bday-item" data-ja="バースデイ名場面ジオラマフィギュア" data-zh="生日名場面立牌"></option>
+          </optgroup>
+          <optgroup label="カード・紙類 (卡片・紙類)">
             <option value="クリアファイル" data-ja="クリアファイル" data-zh="資料夾"></option>
             <option value="ポストカード" data-ja="ポストカード" data-zh="明信片"></option>
             <option value="ぱしゃこれ" data-ja="ぱしゃこれ" data-zh="拍立得"></option>
             <option value="キャラカード" data-ja="キャラカード" data-zh="小卡"></option>
-            <option value="ポスター" data-ja="ポスター" data-zh="海報"></option>
-            <option value="タペストリー" data-ja="タペストリー" data-zh="掛軸"></option>
-            <option value="コースター" data-ja="コースター" data-zh="杯墊"></option>
-            <option value="マグネット" data-ja="マグネット" data-zh="磁鐵"></option>
-            <option value="ステッカー" data-ja="ステッカー" data-zh="貼紙"></option>
-            <option value="ぬいぐるみ" data-ja="ぬいぐるみ" data-zh="娃娃"></option>
-            <option value="フィギュア" data-ja="フィギュア" data-zh="公仔"></option>
-            <option value="バッグ" data-ja="バッグ" data-zh="包包"></option>
-            <option value="名札" data-ja="名札" data-zh="名牌"></option>
-            <option value="スクエア缶バッジ" data-ja="スクエア缶バッジ" data-zh="方徽"></option>
-            <option value="デコレクション缶バッジ" data-ja="デコレクション缶バッジ" data-zh="浮雕徽章"></option>
-            <option value="レンチキュラー缶バッジ" data-ja="レンチキュラー缶バッジ" data-zh="光珊徽章"></option>
-            <option value="バースデイ缶バッジ" data-ja="バースデイ缶バッジ" data-zh="生日徽章"></option>
-            <option value="アクリルぷちスタンド" data-ja="アクリルぷちスタンド" data-zh="小立牌"></option>
             <option value="クリアカード" data-ja="クリアカード" data-zh="透卡"></option>
             <option value="ホロカード" data-ja="ホロカード" data-zh="全息卡"></option>
             <option value="ステータスカードコレクション" data-ja="ステータスカードコレクション" data-zh="數據卡"></option>
             <option value="アートカードコレクション" data-ja="アートカードコレクション" data-zh="藝術卡"></option>
             <option value="メモリアルコレクション" data-ja="メモリアルコレクション" data-zh="回憶相卡"></option>
-            <option value="バースデイカード" data-ja="バースデイカード" data-zh="生日卡"></option>
+            <option value="バースデイカード" class="bday-item" data-ja="バースデイカード" data-zh="生日卡"></option>
+            <option value="ポスター" data-ja="ポスター" data-zh="海報"></option>
+          </optgroup>
+          <optgroup label="ぬいぐるみ・布 (娃娃・布偶)">
+            <option value="タペストリー" data-ja="タペストリー" data-zh="掛軸"></option>
+            <option value="ぬいぐるみ" data-ja="ぬいぐるみ" data-zh="娃娃"></option>
             <option value="ふわコロりん" data-ja="ふわコロりん" data-zh="圓滾滾"></option>
             <option value="ちびぐるみ" data-ja="ちびぐるみ" data-zh="努努"></option>
             <option value="もちマス" data-ja="もちマス" data-zh="趴娃"></option>
             <option value="のるキャラマスコット" data-ja="のるキャラマスコット" data-zh="Js趴娃"></option>
-            <option value="ねんどろいど" data-ja="ねんどろいど" data-zh="黏土人"></option>
-            <option value="ガラスマグネット" data-ja="ガラスマグネット" data-zh="玻璃磁鐵"></option>
-            <option value="ミラー風アクリルステッカー" data-ja="ミラー風アクリルステッカー" data-zh="鏡面壓克力貼"></option>
-            <option value="バースデー アクリルブロック" data-ja="バースデー アクリルブロック" data-zh="生日磚"></option>
-            <option value="バースデイ名場面ジオラマフィギュア" data-ja="バースデイ名場面ジオラマフィギュア" data-zh="生日名場面立牌"></option>
+          </optgroup>
+          <optgroup label="フィギュア (模型)">
+            <option value="フィギュア" data-ja="フィギュア" data-zh="公仔"></option>
             <option value="プライズフィギュア" data-ja="プライズフィギュア" data-zh="景品模型"></option>
-            <option value="その他" data-ja="その他" data-zh="其他"></option>
-          </select>
-          <input class="fi" id="f-type-custom" type="text" data-ph-ja="具体的な種類を入力（任意）" data-ph-zh="輸入具體種類（選填）" style="display:none; margin-top:0.5rem;" />
-        </div>
-      </div>
-
-      <div class="fg">
-        <label><span class="ja">シリーズ / エディション</span><span class="zh">系列 / 版本</span></label>
-        <select class="fi" id="f-series">
-          <option value="" data-ja="-- 選択してください --" data-zh="-- 請選擇 --"></option>
-          <option value="通常版" data-ja="通常版" data-zh="通常版"></option>
-          <option value="バースデイ" data-ja="バースデイ" data-zh="生日"></option>
-          <option value="原画" data-ja="原画" data-zh="原畫"></option>
-          <option value="箔押し" data-ja="箔押し" data-zh="燙金"></option>
-          <option value="セット" data-ja="セット" data-zh="套組"></option>
-          <option value="くじ" data-ja="くじ (一番くじ)" data-zh="抽賞 (一番賞)"></option>
-          <option value="ジャンプフェスタ" data-ja="ジャンプフェスタ" data-zh="Jump Festa"></option>
-          <option value="ハイキュー!!展" data-ja="ハイキュー!!展" data-zh="排球少年！！展"></option>
-          <option value="アニメイトカフェ" data-ja="アニメイトカフェ" data-zh="安利美特咖啡"></option>
-          <option value="ジャンプショップ" data-ja="ジャンプショップ" data-zh="Jump Shop"></option>
-          <option value="TOHO animation" data-ja="TOHO animation" data-zh="TOHO animation"></option>
-          <option value="にとたん" data-ja="にとたん" data-zh="Nitotan (二頭身)"></option>
-          <option value="幼少期" data-ja="子供時代・幼少期" data-zh="幼年"></option>
-          <option value="FLY HIGH!!" data-ja="FLY HIGH!!" data-zh="FLY HIGH!!"></option>
-          <option value="その他" data-ja="その他" data-zh="其他"></option>
+            <option value="ねんどろいど" data-ja="ねんどろいど" data-zh="黏土人"></option>
+          </optgroup>
+          <optgroup label="その他 (其他周邊)">
+            <option value="ストラップ" data-ja="ストラップ" data-zh="吊飾"></option>
+            <option value="キーホルダー" data-ja="キーホルダー" data-zh="鑰匙圈"></option>
+            <option value="コースター" data-ja="コースター" data-zh="杯墊"></option>
+            <option value="マグネット" data-ja="マグネット" data-zh="磁鐵"></option>
+            <option value="ガラスマグネット" data-ja="ガラスマグネット" data-zh="玻璃磁鐵"></option>
+            <option value="ステッカー" data-ja="ステッカー" data-zh="貼紙"></option>
+            <option value="バッグ" data-ja="バッグ" data-zh="包包"></option>
+            <option value="名札" data-ja="名札" data-zh="名牌"></option>
+            <option value="その他" data-ja="その他" data-zh="その他"></option>
+          </optgroup>
         </select>
-        <input class="fi" id="f-series-custom" type="text" data-ph-ja="詳細（年・賞など）を入力（任意）" data-ph-zh="輸入詳細資訊（年份・獎項等，選填）" style="margin-top:0.5rem;" />
+        <input class="fi" id="f-type-custom" type="text" data-ph-ja="具体的な種類を入力（任意）" data-ph-zh="輸入具體種類（選填）" style="display:none; margin-top:0.5rem;" />
       </div>
 
       <div class="form-row">
@@ -968,14 +1056,14 @@
   <div class="modal">
     <div id="detail-inner"></div>
     <div class="modal-footer" id="detail-footer">
-      <button class="btn btn-del" onclick="deleteFromDetail()"><span class="ja">🗑 削除</span><span class="zh">🗑 刪除</span></button>
+      <button class="btn btn-del" onclick="tryDeleteDetail()"><span class="ja">🗑 削除</span><span class="zh">🗑 刪除</span></button>
       <button class="btn btn-ghost" onclick="closeDetail()" style="margin-left:auto"><span class="ja">閉じる</span><span class="zh">關閉</span></button>
       
-      <button id="btn-mark-buy" class="btn btn-buy" style="display:none;" onclick="markAsPurchased()">
+      <button id="btn-mark-buy" class="btn btn-buy" style="display:none;" onclick="tryMarkPurchased()">
         <span class="ja">🛒 購入した！</span><span class="zh">🛒 已購買！</span>
       </button>
 
-      <button class="btn btn-primary" onclick="editFromDetail()"><span class="ja">✏️ 編集する</span><span class="zh">✏️ 編輯</span></button>
+      <button class="btn btn-primary" onclick="tryEditDetail()"><span class="ja">✏️ 編集する</span><span class="zh">✏️ 編輯</span></button>
     </div>
   </div>
 </div>
@@ -994,6 +1082,39 @@
 
 <script>
 /* ══════════════════════════════
+   🔒 CINDY PASSWORD SECURITY
+══════════════════════════════ */
+let isAuthenticated = false;
+
+function checkAuth(callback) {
+  if (isAuthenticated) { 
+    callback(); 
+    return; 
+  }
+  const pw = prompt(currentLang === 'ja' ? '編集用パスワードを入力してください:' : '請輸入編輯密碼:');
+  if (pw === 'cindy') {
+    isAuthenticated = true;
+    toast('🔓 ロック解除', '🔓 已解鎖編輯權限', 'ok');
+    callback();
+  } else if (pw !== null) {
+    toast('❌ パスワードが違います', '❌ 密碼錯誤', 'del');
+  }
+}
+
+// Security Wrapper Functions
+function tryOpenForm(status) { checkAuth(() => openForm(status)); }
+function tryEditDetail() { checkAuth(() => openEditForm(detailId)); } // Fixed! Now edits proper ID
+function tryDeleteDetail() { checkAuth(() => { editId = detailId; deleteItem(); closeDetail(); }); }
+function tryMarkPurchased() { checkAuth(() => markAsPurchased()); }
+function tryImport() { checkAuth(() => triggerImport()); }
+function tryToggleFav(e, id) { checkAuth(() => toggleFav(e, id)); }
+
+/* ══════════════════════════════
+   ❤️ START DATE SETUP
+══════════════════════════════ */
+const KUROO_START_DATE = '2020-01-01'; 
+
+/* ══════════════════════════════
    SUPABASE CLOUD DATABASE SETUP
 ══════════════════════════════ */
 const SUPABASE_URL = 'https://axagdjwzetclqugdbxpy.supabase.co';
@@ -1002,6 +1123,22 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let items = [];
 let currentLang = localStorage.getItem('kuroo-lang') || 'ja';
+
+// --- Multiple Select UX Optimization ---
+// Allows clicking to toggle multiple select options without needing to hold Ctrl/Cmd
+document.addEventListener('DOMContentLoaded', () => {
+  const fSeries = document.getElementById('f-series');
+  if(fSeries) {
+    fSeries.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      const option = e.target;
+      if (option.tagName === 'OPTION') {
+        option.selected = !option.selected;
+        handleSeriesChange();
+      }
+    });
+  }
+});
 
 /* ══ TRANSLATORS FOR SUPABASE COLUMNS ══ */
 function mapToDbRow(item) {
@@ -1016,7 +1153,7 @@ function mapToDbRow(item) {
     qty: item.qty || 1,
     price: item.price ? Number(item.price) : null,
     budget: item.budget ? Number(item.budget) : null,
-    purchase_date: item.date || '', // kept for backwards compatibility in DB
+    purchase_date: item.date || '',
     release_date: item.release || '',
     arrival: item.arrival || '',
     cond: item.cond || '',
@@ -1043,7 +1180,7 @@ function mapFromDbRow(row) {
     qty: row.qty,
     price: row.price,
     budget: row.budget,
-    date: row.purchase_date, // kept for backward compatibility inside the app logic if needed
+    date: row.purchase_date,
     release: row.release_date,
     arrival: row.arrival,
     cond: row.cond,
@@ -1060,13 +1197,11 @@ function mapFromDbRow(row) {
 
 /* ══ 翻訳ロジック (i18n Logic) ══ */
 const dict = {
-  // 萬用
   '缶バッジ': '徽章', 'アクリル': '壓克力', 'アクリルスタンド': '立牌', 'アクリルブロック': '壓克力磚',
   'ストラップ': '吊飾', 'キーホルダー': '鑰匙圈', 'クリアファイル': '資料夾', 'ポストカード': '明信片',
   'ぱしゃこれ': '拍立得', 'キャラカード': '小卡', 'ポスター': '海報', 'タペストリー': '掛軸',
   'コースター': '杯墊', 'マグネット': '磁鐵', 'ステッカー': '貼紙', 'ぬいぐるみ': '娃娃',
   'フィギュア': '公仔', 'バッグ': '包包', '名札': '名牌', 'その他': '其他',
-  // 比較細項的
   'スクエア缶バッジ': '方徽', 'デコレクション缶バッジ': '浮雕徽章', 'レンチキュラー缶バッジ': '光珊徽章',
   'バースデイ缶バッジ': '生日徽章', 'アクリルぷちスタンド': '小立牌', 'クリアカード': '透卡',
   'ホロカード': '全息卡', 'ステータスカードコレクション': '數據卡', 'アートカードコレクション': '藝術卡',
@@ -1074,7 +1209,6 @@ const dict = {
   'ちびぐるみ': '努努', 'もちマス': '趴娃', 'のるキャラマスコット': 'Js趴娃', 'ねんどろいど': '黏土人',
   'ガラスマグネット': '玻璃磁鐵', 'ミラー風アクリルステッカー': '鏡面壓克力貼', 'バースデー アクリルブロック': '生日磚',
   'バースデイ名場面ジオラマフィギュア': '生日名場面立牌', 'プライズフィギュア': '景品模型',
-  // 其他 / Series / UI
   'バースデイ': '生日', '原画': '原畫', '箔押し': '燙金', 'セット': '套組', 'くじ': '抽賞',
   '子供時代・幼少期': '幼年', 'ジャンプショップ': 'Jump Shop',
   '通常版': '通常版', 'ジャンプフェスタ': 'Jump Festa', 'ハイキュー!!展': '排球少年！！展',
@@ -1091,6 +1225,68 @@ function t(str) { return str && currentLang === 'zh' ? (dict[str] || str) : str;
 function updateDynamicText() {
   document.querySelectorAll('option[data-ja]').forEach(opt => opt.textContent = opt.getAttribute(`data-${currentLang}`));
   document.querySelectorAll('[data-ph-ja]').forEach(el => el.placeholder = el.getAttribute(`data-ph-${currentLang}`));
+  updateDaysCounter();
+}
+
+function updateDaysCounter() {
+  const start = new Date(KUROO_START_DATE);
+  const now = new Date();
+  const diffTime = Math.abs(now - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  document.getElementById('days-badge-col').innerHTML = currentLang === 'ja' 
+    ? `🐈‍⬛ 黒尾と出会って <b>${diffDays}</b> 日` 
+    : `🐈‍⬛ 與黑尾相遇的第 <b>${diffDays}</b> 天`;
+    
+  document.getElementById('days-badge-wish').innerHTML = currentLang === 'ja' 
+    ? `🐈‍⬛ 黒尾と出会って <b>${diffDays}</b> 日` 
+    : `🐈‍⬛ 與黑尾相遇的第 <b>${diffDays}</b> 天`;
+}
+
+/* ══════════════════════════════
+   🖊️ KUROO QUOTE TYPEWRITER
+══════════════════════════════ */
+let typeTimeout;
+const kurooQuotes = [
+  { ja: "「俺達は血液だ 滞り無く流れろ 酸素を回せ “脳”が正常に働くために」", zh: "「我們是血液，要順暢無礙地流動，輸送氧氣，為了讓『腦』能正常運作。」" },
+  { ja: "「ボクが親切なのはいつものことです」", zh: "「我一直都是這麼親切的」" },
+  { ja: "「たまには主将にもカッコイイ仕事させてちょうだいよ」", zh: "「偶爾也讓主將做點帥氣的工作吧」" },
+  { ja: "「リードブロックは我慢と粘りのブロックであると同時に最後に笑うブロックだ」", zh: "「觀察攔網是忍耐與堅持的攔網，同時也是笑到最後的攔網」" },
+  { ja: "「チームワークが”ハマる”瞬間てのは多分お前が思ってるよりずっと気持ちいいぞ」", zh: "「團隊合作『契合』的瞬間，大概比你想像的還要爽快多了」" },
+  { ja: "「手は前っつったでしょ ノブカツくん」", zh: "「我說過手要放在前面吧，信勝同學」" }
+];
+
+let qIdx = 0;
+let charIdx = 0;
+let isDeleting = false;
+
+function runTypewriter() {
+  const el = document.getElementById('hero-quote-text');
+  if (!el) return;
+
+  clearTimeout(typeTimeout);
+
+  const text = kurooQuotes[qIdx][currentLang];
+
+  if (isDeleting) {
+    el.textContent = text.substring(0, charIdx - 1);
+    charIdx--;
+    typeTimeout = setTimeout(runTypewriter, 25); // Erasing speed
+  } else {
+    el.textContent = text.substring(0, charIdx + 1);
+    charIdx++;
+    typeTimeout = setTimeout(runTypewriter, 70); // Typing speed
+  }
+
+  // Handle pauses between typing and deleting
+  if (!isDeleting && charIdx === text.length) {
+    isDeleting = true;
+    typeTimeout = setTimeout(runTypewriter, 4500); // Wait 4.5 seconds so user can read it
+  } else if (isDeleting && charIdx === 0) {
+    isDeleting = false;
+    qIdx = (qIdx + 1) % kurooQuotes.length; // Move to the next quote
+    typeTimeout = setTimeout(runTypewriter, 600); // Wait a half second before starting next quote
+  }
 }
 
 function toggleLang() {
@@ -1099,13 +1295,50 @@ function toggleLang() {
   document.body.setAttribute('data-lang', currentLang);
   updateDynamicText();
   render(); renderWish(); updateSidebar(); updateWishStats(); 
+  
+  // Cleanly reset the typewriter when changing language
+  isDeleting = false;
+  charIdx = 0;
+  document.getElementById('hero-quote-text').textContent = '';
+  runTypewriter(); 
+  
   if(document.getElementById('page-dash').classList.contains('active')) renderDashboard();
 }
 
-function toggleCustomType() { document.getElementById('f-type-custom').style.display = (document.getElementById('f-type').value === 'その他') ? 'block' : 'none'; }
-function toggleCustomSeries() { 
-  // No longer hiding/showing because we want the remarks field always visible.
+/* ══════════════════════════════
+   🎈 CONDITIONAL DROPDOWN LOGIC
+══════════════════════════════ */
+function handleSeriesChange() {
+  const selectEl = document.getElementById('f-series');
+  const selectedValues = Array.from(selectEl.selectedOptions).map(opt => opt.value);
+  const isBday = selectedValues.includes('バースデイ');
+  const bdayOptions = document.querySelectorAll('#f-type .bday-item');
+  const typeSelect = document.getElementById('f-type');
+  
+  bdayOptions.forEach(opt => {
+    if (isBday) {
+        opt.style.display = '';
+        opt.hidden = false;
+        opt.disabled = false;
+    } else {
+        opt.style.display = 'none';
+        opt.hidden = true;
+        opt.disabled = true;
+    }
+  });
+
+  // If a birthday item is selected but we change series away from Birthday, reset type safely
+  if (!isBday && typeSelect.options[typeSelect.selectedIndex] && typeSelect.options[typeSelect.selectedIndex].classList.contains('bday-item')) {
+    typeSelect.value = '缶バッジ';
+  }
+  
+  toggleCustomType();
 }
+
+function toggleCustomType() { 
+    document.getElementById('f-type-custom').style.display = (document.getElementById('f-type').value === 'その他') ? 'block' : 'none'; 
+}
+function toggleCustomSeries() { }
 
 /* ══════════════════════════════
    DATA SYNC & MAGIC MIGRATION
@@ -1143,6 +1376,7 @@ async function initApp() {
   }
 
   render(); renderWish(); updateSidebar(); updateWishStats();
+  runTypewriter(); // Start typewriter on page load
   if(document.getElementById('page-dash').classList.contains('active')) renderDashboard();
 }
 
@@ -1171,8 +1405,10 @@ let formSt   = 'owned';
 let curQty   = 1;
 let curImgs  = [];
 let currentDetailIdx = 0;
-let dashYear = new Date().getFullYear();
-let dashMonth = new Date().getMonth();
+
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let chartYear = new Date().getFullYear();
 
 /* ══ ナビ切替 ══ */
 function switchPage(p, btn) {
@@ -1180,6 +1416,9 @@ function switchPage(p, btn) {
   document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
   document.getElementById('page-' + p).classList.add('active');
   btn.classList.add('active');
+  
+  if(p === 'col') runTypewriter(); // Run typewriter again if they come back to the home page
+  
   if(p === 'dash') renderDashboard(); else { render(); renderWish(); updateSidebar(); updateWishStats(); }
 }
 
@@ -1233,7 +1472,7 @@ function makeCard(item, isWishlistContext = false) {
   const preorderText = currentLang === 'ja' ? '🚚 未到着' : '🚚 預購未到';
   const isPreorderNotArrived = item.status === 'owned' && item.arrival === '未到着';
   const statusBadge = item.status === 'wishlist' ? `<div class="card-status-badge badge-wish">${bWish}</div>` : (isPreorderNotArrived ? `<div class="card-status-badge badge-preorder">${preorderText}</div>` : `<div class="card-status-badge badge-owned">${bOwned}</div>`);
-  const favBtn = `<button class="fav-btn ${item.fav ? 'is-fav' : ''}" onclick="toggleFav(event, '${item.id}')">${item.fav ? '♥' : '♡'}</button>`;
+  const favBtn = `<button class="fav-btn ${item.fav ? 'is-fav' : ''}" onclick="tryToggleFav(event, '${item.id}')">${item.fav ? '♥' : '♡'}</button>`;
   
   const bottom = item.status === 'owned'
     ? `<span style="color:${item.fav ? '#ff4d6d' : 'var(--muted)'}">${item.fav ? '♥' : '♡'}</span><span>${item.price ? '¥' + Number(item.price).toLocaleString() : '—'}</span>`
@@ -1241,17 +1480,16 @@ function makeCard(item, isWishlistContext = false) {
 
   const dispType = item.itemType === 'その他' && item.customType ? `${t('その他')} - ${item.customType}` : t(item.itemType);
   
-  // Custom Series display logic
+  // Adjusted for multiple series logic
   let dispSeries = '';
   if (item.series) {
-    if (item.series === 'その他' && item.customSeries) {
-      dispSeries = item.customSeries;
-    } else {
-      dispSeries = t(item.series) + (item.customSeries ? ' ' + item.customSeries : '');
-    }
+    const sArr = item.series.split(', ').map(s => s.trim());
+    const tArr = sArr.map(s => s === 'その他' && item.customSeries ? item.customSeries : t(s));
+    dispSeries = tArr.join(', ') + (item.customSeries && !sArr.includes('その他') ? ' ' + item.customSeries : '');
   }
 
   const tagType = item.itemType === 'その他' && item.customType ? item.customType : t(item.itemType);
+  const qtyBadge = item.status === 'owned' ? `<div class="card-qty-badge">×${item.qty || 1}</div>` : '';
 
   let gotItHTML = '';
   if (isWishlistContext && item.status === 'owned') {
@@ -1259,7 +1497,7 @@ function makeCard(item, isWishlistContext = false) {
     gotItHTML = `<div class="got-it-overlay"><div class="got-it-badge">✨ <span class="ja">入手済み</span><span class="zh">已入手</span> ✨</div></div>`;
   }
 
-  div.innerHTML = `<div class="card-thumb" data-idx="0">${imgHTML}${statusBadge}${favBtn}<div class="card-qty-badge">×${item.qty || 1}</div></div><div class="card-body"><div class="card-name">${item.name}</div><div class="card-type">${dispType}${dispSeries ? ' · ' + dispSeries : ''}</div><div class="card-tags"><span class="ctag ctag-red">${currentLang==='ja' ? '黒尾鉄朗' : '黑尾鐵朗'}</span><span class="ctag">${tagType}</span>${item.cond ? `<span class="ctag">${t(item.cond)}</span>` : ''}</div></div><div class="card-footer">${bottom}</div>${gotItHTML}`;
+  div.innerHTML = `<div class="card-thumb" data-idx="0">${imgHTML}${statusBadge}${favBtn}${qtyBadge}</div><div class="card-body"><div class="card-name">${item.name}</div><div class="card-type">${dispType}${dispSeries ? ' · ' + dispSeries : ''}</div><div class="card-tags"><span class="ctag ctag-red">${currentLang==='ja' ? '黒尾鉄朗' : '黑尾鐵朗'}</span><span class="ctag">${tagType}</span>${item.cond ? `<span class="ctag">${t(item.cond)}</span>` : ''}</div></div><div class="card-footer">${bottom}</div>${gotItHTML}`;
   return div;
 }
 
@@ -1267,11 +1505,13 @@ function render() {
   const q = (document.getElementById('search-col')?.value || '').toLowerCase().trim();
   const type = document.getElementById('flt-type')?.value || '';
   const sort = document.getElementById('flt-sort')?.value || 'newest';
+  const favFilter = document.getElementById('flt-fav-col')?.value;
   const grid = document.getElementById('grid-col');
   if (!grid) return;
   grid.innerHTML = '';
 
   let list = items.filter(i => i.status === 'owned' && (!type || ((i.itemType === 'その他' && i.customType) ? i.customType : i.itemType) === type));
+  if (favFilter === 'fav') list = list.filter(i => i.fav);
   if (q) list = list.filter(i => (i.name||'').toLowerCase().includes(q) || (i.series||'').toLowerCase().includes(q) || t(i.series||'').toLowerCase().includes(q) || (i.customSeries||'').toLowerCase().includes(q));
 
   list.sort((a, b) => {
@@ -1281,7 +1521,7 @@ function render() {
     return (b._ts||0) - (a._ts||0);
   });
 
-  if (!list.length) grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-msg"><span class="ja">まだアイテムがありません。</span><span class="zh">暫無物品。</span></div></div>`;
+  if (!list.length) grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-msg"><span class="ja">アイテムが見つかりません。</span><span class="zh">找不到物品。</span></div></div>`;
   else list.forEach(i => grid.appendChild(makeCard(i, false)));
   updateStats();
 }
@@ -1289,15 +1529,17 @@ function render() {
 function renderWish() {
   const q = (document.getElementById('search-wish')?.value || '').toLowerCase().trim();
   const pri = document.getElementById('flt-priority')?.value || '';
+  const favFilter = document.getElementById('flt-fav-wish')?.value;
   const grid = document.getElementById('grid-wish');
   if (!grid) return;
   grid.innerHTML = '';
 
   let list = items.filter(i => (i.status === 'wishlist' || (i.status === 'owned' && i.wasWishlist)) && (!pri || i.priority === pri));
+  if (favFilter === 'fav') list = list.filter(i => i.fav);
   if (q) list = list.filter(i => (i.name||'').toLowerCase().includes(q) || (i.series||'').toLowerCase().includes(q) || (i.customSeries||'').toLowerCase().includes(q));
   list.sort((a, b) => a.status === 'owned' && b.status === 'wishlist' ? 1 : (a.status === 'wishlist' && b.status === 'owned' ? -1 : (b._ts||0) - (a._ts||0)));
 
-  if (!list.length) grid.innerHTML = `<div class="empty-state"><div class="empty-icon">💜</div><div class="empty-msg"><span class="ja">ウィッシュリストは空です。</span><span class="zh">願望清單為空。</span></div></div>`;
+  if (!list.length) grid.innerHTML = `<div class="empty-state"><div class="empty-icon">💜</div><div class="empty-msg"><span class="ja">アイテムが見つかりません。</span><span class="zh">找不到物品。</span></div></div>`;
   else list.forEach(i => grid.appendChild(makeCard(i, true)));
   updateWishStats();
 }
@@ -1418,28 +1660,113 @@ function updateSidebar() {
 /* ══════════════════════════════
    DASHBOARD FUNCTIONS
 ══════════════════════════════ */
-function renderDashboard() { renderCalendar(); renderChart(); }
-function changeMonth(dir) { dashMonth += dir; if(dashMonth > 11) { dashMonth = 0; dashYear++; } if(dashMonth < 0) { dashMonth = 11; dashYear--; } renderCalendar(); }
+function renderDashboard() { 
+  renderCalendar(); 
+  renderChart(); 
+  
+  // Dashboard Rankings
+  const ownedItems = items.filter(i => i.status === 'owned');
+  
+  // 1. Expensive Items Ranking
+  const topExpensive = [...ownedItems].sort((a,b) => (Number(b.price)||0) - (Number(a.price)||0)).slice(0, 5);
+  const rankExpEl = document.getElementById('rank-expensive');
+  if(rankExpEl) {
+     rankExpEl.innerHTML = topExpensive.length ? topExpensive.map((it, idx) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--warm1); padding:0.6rem 0.8rem; border-radius:8px; border:1px solid var(--border); cursor:pointer;" onclick="openDetail('${it.id}')">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <b style="color:var(--muted); font-size:0.9rem; min-width: 16px;">${idx+1}.</b>
+          <span style="font-size:0.85rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">${it.name}</span>
+        </div>
+        <span style="color:var(--gold); font-weight:bold; font-size:0.85rem;">¥${(Number(it.price)||0).toLocaleString()}</span>
+      </div>
+     `).join('') : `<div style="color:var(--muted); font-size:0.8rem; text-align:center; padding: 1rem 0;"><span class="ja">データがありません</span><span class="zh">尚無資料</span></div>`;
+  }
+
+  // 2. Series Collection Ranking
+  const seriesCount = {};
+  ownedItems.forEach(it => {
+      if(it.series) {
+          const sArr = it.series.split(', ').map(s => s.trim());
+          sArr.forEach(s => {
+              const sName = s === 'その他' && it.customSeries ? it.customSeries : t(s); 
+              seriesCount[sName] = (seriesCount[sName] || 0) + (it.qty || 1);
+          });
+      }
+  });
+  const topSeries = Object.entries(seriesCount).sort((a,b) => b[1] - a[1]).slice(0, 5);
+  const rankSerEl = document.getElementById('rank-series');
+  if(rankSerEl) {
+     rankSerEl.innerHTML = topSeries.length ? topSeries.map((s, idx) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--warm1); padding:0.6rem 0.8rem; border-radius:8px; border:1px solid var(--border);">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <b style="color:var(--muted); font-size:0.9rem; min-width: 16px;">${idx+1}.</b>
+          <span style="font-size:0.85rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">${s[0]}</span>
+        </div>
+        <span style="color:var(--accent); font-weight:bold; font-size:0.85rem;">${s[1]} <span class="ja">個</span><span class="zh">個</span></span>
+      </div>
+     `).join('') : `<div style="color:var(--muted); font-size:0.8rem; text-align:center; padding: 1rem 0;"><span class="ja">データがありません</span><span class="zh">尚無資料</span></div>`;
+  }
+
+  // 3. Series by Total Spend Ranking
+  const seriesSpend = {};
+  ownedItems.forEach(it => {
+      if(it.series) {
+          const sArr = it.series.split(', ').map(s => s.trim());
+          sArr.forEach(s => {
+              const sName = s === 'その他' && it.customSeries ? it.customSeries : t(s);
+              seriesSpend[sName] = (seriesSpend[sName] || 0) + (Number(it.price) || 0) * (it.qty || 1);
+          });
+      }
+  });
+  const topSpendSeries = Object.entries(seriesSpend).sort((a,b) => b[1] - a[1]).slice(0, 5);
+  const rankSpendEl = document.getElementById('rank-spend');
+  if(rankSpendEl) {
+     rankSpendEl.innerHTML = topSpendSeries.length ? topSpendSeries.map((s, idx) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--warm1); padding:0.6rem 0.8rem; border-radius:8px; border:1px solid var(--border);">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <b style="color:var(--muted); font-size:0.9rem; min-width: 16px;">${idx+1}.</b>
+          <span style="font-size:0.85rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">${s[0]}</span>
+        </div>
+        <span style="color:var(--gold); font-weight:bold; font-size:0.85rem;">¥${s[1].toLocaleString()}</span>
+      </div>
+     `).join('') : `<div style="color:var(--muted); font-size:0.8rem; text-align:center; padding: 1rem 0;"><span class="ja">データがありません</span><span class="zh">尚無資料</span></div>`;
+  }
+  
+  // Reapply language hiding on dynamic Dash HTML
+  document.getElementById('page-dash').querySelectorAll('.zh').forEach(el => el.style.display = currentLang === 'ja' ? 'none' : 'inline');
+  document.getElementById('page-dash').querySelectorAll('.ja').forEach(el => el.style.display = currentLang === 'zh' ? 'none' : 'inline');
+}
+
+function changeMonth(dir) { 
+  calMonth += dir; 
+  if(calMonth > 11) { calMonth = 0; calYear++; } 
+  if(calMonth < 0) { calMonth = 11; calYear--; } 
+  renderCalendar(); 
+}
+
+function changeChartYear(dir) {
+  chartYear += dir;
+  renderChart();
+}
 
 function renderCalendar() {
   const grid = document.getElementById('cal-grid');
   const title = document.getElementById('cal-month-title');
   if(!grid) return;
-  title.textContent = `${dashYear}年 ${dashMonth + 1}月`;
+  title.textContent = `${calYear}年 ${calMonth + 1}月`;
   grid.innerHTML = '';
   const days = currentLang === 'ja' ? ['日','月','火','水','木','金','土'] : ['日','一','二','三','四','五','六'];
   days.forEach(d => { const el = document.createElement('div'); el.className = 'cal-day-name'; el.textContent = d; grid.appendChild(el); });
-  const firstDay = new Date(dashYear, dashMonth, 1).getDay();
-  const daysInMonth = new Date(dashYear, dashMonth + 1, 0).getDate();
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   for(let i=0; i<firstDay; i++) { const el = document.createElement('div'); el.className = 'cal-cell is-empty'; grid.appendChild(el); }
   const today = new Date();
-  const isCurrentMonth = today.getFullYear() === dashYear && today.getMonth() === dashMonth;
+  const isCurrentMonth = today.getFullYear() === calYear && today.getMonth() === calMonth;
   for(let i=1; i<=daysInMonth; i++) {
     const el = document.createElement('div'); el.className = 'cal-cell';
     if(isCurrentMonth && today.getDate() === i) el.classList.add('cal-today');
-    const dateStr = `${dashYear}-${String(dashMonth+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
     
-    // Check release date (fallback to old purchase date if release is empty)
     const boughtItems = items.filter(it => it.status === 'owned' && (it.release || it.date) === dateStr);
     
     el.innerHTML = `<span>${i}</span>`;
@@ -1459,16 +1786,22 @@ function showDateInfo(dateStr, boughtItems) {
 
 function renderChart() {
   const chart = document.getElementById('spend-chart');
-  document.getElementById('chart-year-label').textContent = dashYear;
-  document.getElementById('chart-year-zh-label').textContent = dashYear;
+  document.getElementById('chart-year-label').textContent = chartYear;
+  document.getElementById('chart-year-zh-label').textContent = chartYear;
   if(!chart) return;
   chart.innerHTML = '';
   const monthlySpend = new Array(12).fill(0);
+  
+  let yearlyItems = [];
+
   items.forEach(it => {
-    const targetDate = it.release || it.date; // fallback for backwards compatibility
+    const targetDate = it.release || it.date; 
     if(it.status === 'owned' && targetDate) {
       const [y, m, d] = targetDate.split('-');
-      if(parseInt(y) === dashYear) monthlySpend[parseInt(m) - 1] += Number(it.price || 0) * (it.qty || 1);
+      if(parseInt(y) === chartYear) {
+        monthlySpend[parseInt(m) - 1] += Number(it.price || 0) * (it.qty || 1);
+        if (it.imgs && it.imgs.length > 0) yearlyItems.push(it);
+      }
     }
   });
   const maxSpend = Math.max(...monthlySpend, 1000); 
@@ -1477,6 +1810,25 @@ function renderChart() {
     const wrap = document.createElement('div'); wrap.className = 'chart-bar-wrap';
     wrap.innerHTML = `<div class="chart-tooltip">${i+1}${currentLang === 'ja' ? '月' : '月'}: ¥${monthlySpend[i].toLocaleString()}</div><div class="chart-bar" style="height: ${heightPct}%"></div><div class="chart-label">${i+1}</div>`;
     chart.appendChild(wrap);
+  }
+  
+  // Render Yearly Image Gallery
+  const gallery = document.getElementById('yearly-gallery');
+  gallery.innerHTML = '';
+  if (yearlyItems.length === 0) {
+     gallery.innerHTML = `<div style="color:var(--muted); font-size:0.8rem; grid-column: 1 / -1; text-align: center; padding: 1rem 0;"><span class="ja">この年のアイテム画像はありません</span><span class="zh">這一年沒有物品圖片</span></div>`;
+     gallery.querySelectorAll('.zh').forEach(el => el.style.display = currentLang === 'ja' ? 'none' : 'inline');
+     gallery.querySelectorAll('.ja').forEach(el => el.style.display = currentLang === 'zh' ? 'none' : 'inline');
+  } else {
+     yearlyItems.forEach(it => {
+        const imgWrap = document.createElement('div');
+        imgWrap.style.cssText = "width: 100%; aspect-ratio: 1; border-radius:8px; overflow:hidden; cursor:pointer; border:1px solid var(--border); transition: transform 0.2s;";
+        imgWrap.onmouseover = () => imgWrap.style.transform = 'scale(1.1)';
+        imgWrap.onmouseout = () => imgWrap.style.transform = 'scale(1)';
+        imgWrap.onclick = () => openDetail(it.id);
+        imgWrap.innerHTML = `<img src="${it.imgs[0]}" style="width:100%; height:100%; object-fit:cover;" title="${it.name}"/>`;
+        gallery.appendChild(imgWrap);
+     });
   }
 }
 
@@ -1524,10 +1876,10 @@ function openForm(status) {
   document.getElementById('form-title').innerHTML = '<span class="ja">アイテムを追加</span><span class="zh">新增物品</span>';
   document.getElementById('btn-del').style.display = 'none';
   ['f-name','f-price','f-budget','f-notes','f-shop','f-url','f-type-custom','f-series-custom', 'f-release'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-type').value = '缶バッジ'; document.getElementById('f-series').value = '';
+  document.getElementById('f-type').value = '缶バッジ'; document.getElementById('f-series').selectedIndex = -1;
   document.getElementById('f-cond').value = 'ほぼ新品'; document.getElementById('f-priority').value = '🔥 最優先';
   document.getElementById('f-arrival').value = '到着済み'; document.getElementById('file-input').value = '';
-  setQtyDisplay(1); setStatus(formSt); toggleCustomType(); renderFormImgs();
+  setQtyDisplay(1); setStatus(formSt); handleSeriesChange(); renderFormImgs();
   document.getElementById('ov-form').classList.add('open');
 }
 
@@ -1545,8 +1897,16 @@ function openEditForm(id) {
   document.getElementById('f-url').value = item.url || ''; 
   document.getElementById('f-release').value = item.release || '';
   document.getElementById('f-arrival').value = item.arrival || '到着済み';
+  
+  const seriesValues = (item.series || '').split(', ').map(s => s.trim());
+  Array.from(document.getElementById('f-series').options).forEach(opt => {
+    opt.selected = seriesValues.includes(opt.value);
+  });
+  
+  document.getElementById('f-series-custom').value = item.customSeries || '';
+  handleSeriesChange(); // Initialize the dropdown visibilities BEFORE setting type
+  
   document.getElementById('f-type').value = item.itemType|| '缶バッジ'; document.getElementById('f-type-custom').value = item.customType || '';
-  document.getElementById('f-series').value = item.series || ''; document.getElementById('f-series-custom').value = item.customSeries || '';
   document.getElementById('f-cond').value = item.cond || 'ほぼ新品'; document.getElementById('f-priority').value= item.priority|| '🔥 最優先';
   setQtyDisplay(curQty); setStatus(formSt); toggleCustomType(); renderFormImgs();
   document.getElementById('ov-detail').classList.remove('open'); document.getElementById('ov-form').classList.add('open');
@@ -1688,7 +2048,7 @@ async function saveItem() {
   
   const existingItem = editId ? items.find(i => i.id === editId) : null;
   const itemTypeSelect = document.getElementById('f-type').value;
-  const seriesSelect = document.getElementById('f-series').value;
+  const seriesSelect = Array.from(document.getElementById('f-series').selectedOptions).map(opt => opt.value).join(', ');
 
   const item = {
     id: editId || uid(), _ts: Date.now(), status: formSt,
@@ -1745,11 +2105,9 @@ function openDetail(id) {
   
   let dispSeries = '—';
   if (item.series) {
-    if (item.series === 'その他' && item.customSeries) {
-      dispSeries = item.customSeries;
-    } else {
-      dispSeries = t(item.series) + (item.customSeries ? ' ' + item.customSeries : '');
-    }
+    const sArr = item.series.split(', ').map(s => s.trim());
+    const tArr = sArr.map(s => s === 'その他' && item.customSeries ? item.customSeries : t(s));
+    dispSeries = tArr.join(', ') + (item.customSeries && !sArr.includes('その他') ? ' ' + item.customSeries : '');
   }
 
   let heroHTML = `<div class="detail-hero-placeholder">🐱</div>`;
@@ -1760,6 +2118,8 @@ function openDetail(id) {
     }
   }
 
+  const qtyDisplay = item.status === 'owned' ? `<span style="font-weight:bold; color:var(--muted); margin-left:0.5rem">×${item.qty || 1}</span>` : '';
+
   let gridHTML = '';
   if (item.status === 'owned') {
     gridHTML = `
@@ -1767,7 +2127,7 @@ function openDetail(id) {
       <div class="dg-item"><div class="dg-label"><span class="ja">発売日</span><span class="zh">發售日</span></div><div class="dg-val">${item.release || '—'}</div></div>
       <div class="dg-item"><div class="dg-label"><span class="ja">状態</span><span class="zh">狀態</span></div><div class="dg-val">${t(item.cond) || '—'}</div></div>
       <div class="dg-item"><div class="dg-label"><span class="ja">購入先</span><span class="zh">購買管道</span></div><div class="dg-val">${item.shop || '—'}</div></div>
-      <div class="dg-item"><div class="dg-label"><span class="ja">到着状況</span><span class="zh">到貨狀態</span></div><div class="dg-val">${t(item.arrival) || '—'}</div></div>`;
+      <div class="dg-item"><div class="dg-label"><span class="ja">到着状況</span><span class="zh">到貨状態</span></div><div class="dg-val">${t(item.arrival) || '—'}</div></div>`;
   } else {
     gridHTML = `
       <div class="dg-item"><div class="dg-label"><span class="ja">必要予算</span><span class="zh">所需預算</span></div><div class="dg-val" style="color:var(--gold)">${item.budget ? '¥' + Number(item.budget).toLocaleString() : '—'}</div></div>
@@ -1777,7 +2137,7 @@ function openDetail(id) {
   document.getElementById('detail-inner').innerHTML = `
     <div class="detail-hero-img-wrap">${heroHTML}</div>
     <div class="detail-body">
-      <div style="margin-bottom:0.8rem">${bdg} <span style="font-weight:bold; color:var(--muted); margin-left:0.5rem">×${item.qty || 1}</span></div>
+      <div style="margin-bottom:0.8rem">${bdg} ${qtyDisplay}</div>
       <div class="detail-title">${item.name}</div>
       <div class="detail-sub">${dispType} ${dispSeries !== '—' ? ' · ' + dispSeries : ''}</div>
       <div class="detail-grid">${gridHTML}</div>
@@ -1801,7 +2161,6 @@ window.cycleDetailImg = function(id, dir) {
 };
 
 function closeDetail() { document.getElementById('ov-detail').classList.remove('open'); }
-function editFromDetail() { openEditForm(detailId); }
 function deleteFromDetail() { editId = detailId; deleteItem(); closeDetail(); }
 
 window.markAsPurchased = async function() {
