@@ -417,6 +417,7 @@
     .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.4rem; }
     .tag-chip { background: var(--warm1); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; color: var(--muted); cursor: pointer; transition: all .2s; }
     .tag-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(200,16,46,0.08); }
+    .tag-chip.active-chip { background: rgba(200,16,46,0.1); border-color: var(--accent); color: var(--accent); font-weight: bold; }
 
     .cost-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border); }
     .cost-label { color: var(--muted); }
@@ -438,7 +439,7 @@
     .modal-body { padding: 1.5rem; }
     .img-upload-area { border: 2px dashed var(--border); border-radius: 14px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all .25s; background: var(--warm1); margin-bottom: 1.2rem; position: relative; overflow: hidden; }
     .img-upload-area:hover { border-color: var(--accent); background: rgba(200,16,46,0.04); }
-    .upload-hint { color: var(--muted); font-size: 0.82rem; }
+    .upload-hint { color: var(--muted); font-size: 0.82rem; transition: opacity 0.2s; }
     .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5; }
     
     .img-preview-container { display: flex; gap: 0.5rem; overflow-x: auto; margin-top: 0.5rem; }
@@ -596,7 +597,7 @@
       <div class="hero-stats-row">
         <div class="h-stat"><div class="h-stat-num" id="s-total">0</div><div class="h-stat-label"><span class="ja">合計</span><span class="zh">總計</span></div></div>
         <div class="h-stat"><div class="h-stat-num" id="s-owned">0</div><div class="h-stat-label"><span class="ja">所持中</span><span class="zh">已擁有</span></div></div>
-        <div class="h-stat"><div class="h-stat-num" id="s-qty">0</div><div class="h-stat-label"><span class="ja">総個数</span><span class="zh">總數</span></div></div>
+        <div class="h-stat"><div class="h-stat-num" id="s-qty">0</div><div class="h-stat-label"><span class="ja">総個数</span><span class="zh">總数</span></div></div>
         <div class="h-stat"><div class="h-stat-num" id="s-spend">¥0</div><div class="h-stat-label"><span class="ja">総費用</span><span class="zh">總花費</span></div></div>
       </div>
     </div>
@@ -661,7 +662,7 @@
             <option value="のるキャラマスコット" data-ja="のるキャラマスコット" data-zh="Js趴娃"></option>
           </optgroup>
           <optgroup label="フィギュア (模型)">
-            <option value="フィギュア" data-ja="フィギュア" data-zh="公仔"></option>
+            <option value="フィギュア" data-ja="フィギュア" data-zh="模型"></option>
             <option value="プライズフィギュア" data-ja="プライズフィギュア" data-zh="景品模型"></option>
             <option value="ねんどろいど" data-ja="ねんどろいど" data-zh="黏土人"></option>
           </optgroup>
@@ -861,43 +862,28 @@
       </div>
 
       <div class="img-upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
-        <input type="file" id="file-input" accept="image/*" multiple onchange="handleImg(event)"/>
+        <input type="file" id="file-input" accept="image/jpeg, image/png, image/webp, image/gif" multiple onchange="handleImg(event)"/>
         <div id="upload-hint-content">
           <div class="upload-icon">📷</div>
           <div class="upload-hint">
-            <span class="ja">クリックして複数の商品画像をアップロード<br/><small>（画像は自動で圧縮保存されます）</small></span>
-            <span class="zh">點擊上傳多張商品圖片<br/><small>（圖片將自動壓縮儲存）</small></span>
+            <span class="ja">クリックして複数の商品画像をアップロード<br/><small>（画像は自動で圧縮され、クラウドに保存されます）</small></span>
+            <span class="zh">點擊上傳多張商品圖片<br/><small>（圖片將自動壓縮並上傳至雲端）</small></span>
           </div>
         </div>
         <div class="img-preview-container" id="img-preview-container"></div>
       </div>
 
-      <div class="form-row">
-        <div class="fg">
-          <label><span class="ja">商品名 *</span><span class="zh">商品名稱 *</span></label>
-          <input class="fi" id="f-name" type="text" data-ph-ja="例：黒尾鉄朗 1/8スケールフィギュア" data-ph-zh="例：黑尾鐵朗 1/8比例模型"/>
-        </div>
-        <div class="fg">
-          <label><span class="ja">シリーズ / エディション</span><span class="zh">系列 / 版本</span></label>
-          <select class="fi" id="f-series" multiple size="5" onchange="handleSeriesChange()" style="height: auto; min-height: 120px; overflow-y: auto; padding: 0.4rem;">
-            <option value="通常版" data-ja="通常版" data-zh="通常版"></option>
-            <option value="バースデイ" data-ja="バースデイ" data-zh="生日"></option>
-            <option value="原画" data-ja="原画" data-zh="原畫"></option>
-            <option value="箔押し" data-ja="箔押し" data-zh="燙金"></option>
-            <option value="セット" data-ja="セット" data-zh="套組"></option>
-            <option value="くじ" data-ja="くじ (一番くじ)" data-zh="抽賞 (一番賞)"></option>
-            <option value="ジャンプフェスタ" data-ja="ジャンプフェスタ" data-zh="Jump Festa"></option>
-            <option value="ハイキュー!!展" data-ja="ハイキュー!!展" data-zh="排球少年！！展"></option>
-            <option value="アニメイト" data-ja="アニメイト" data-zh="安利美特(Animate)"></option>
-            <option value="ジャンプショップ" data-ja="ジャンプショップ" data-zh="Jump Shop"></option>
-            <option value="TOHO animation" data-ja="TOHO animation" data-zh="TOHO animation"></option>
-            <option value="FAN PARK" data-ja="FAN PARK" data-zh="FAN PARK"></option>
-            <option value="極楽湯" data-ja="極楽湯" data-zh="極楽湯"></option>
-            <option value="FLY HIGH!!" data-ja="FLY HIGH!!" data-zh="FLY HIGH!!"></option>
-            <option value="その他" data-ja="その他" data-zh="その他"></option>
-          </select>
-          <input class="fi" id="f-series-custom" type="text" data-ph-ja="詳細（年・賞など）を入力（任意）" data-ph-zh="輸入詳細資訊（年份・獎項等，選填）" style="margin-top:0.5rem;" />
-        </div>
+      <div class="fg">
+        <label><span class="ja">商品名 *</span><span class="zh">商品名稱 *</span></label>
+        <input class="fi" id="f-name" type="text" data-ph-ja="例：黒尾鉄朗 1/8スケールフィギュア" data-ph-zh="例：黑尾鐵朗 1/8比例模型"/>
+      </div>
+
+      <div class="fg">
+        <label><span class="ja">シリーズ / エディション (複数選択可)</span><span class="zh">系列 / 版本 (可多選)</span></label>
+        <div id="series-chip-container" class="tag-cloud" style="max-height: 180px; overflow-y: auto; padding: 0.2rem 0;">
+          </div>
+        <input type="hidden" id="f-series" value="" />
+        <input class="fi" id="f-series-custom" type="text" data-ph-ja="詳細（年・賞など）を入力（任意）" data-ph-zh="輸入詳細資訊（年份・獎項等，選填）" style="margin-top:0.6rem;" />
       </div>
 
       <div class="fg">
@@ -942,7 +928,7 @@
             <option value="のるキャラマスコット" data-ja="のるキャラマスコット" data-zh="Js趴娃"></option>
           </optgroup>
           <optgroup label="フィギュア (模型)">
-            <option value="フィギュア" data-ja="フィギュア" data-zh="公仔"></option>
+            <option value="フィギュア" data-ja="フィギュア" data-zh="模型"></option>
             <option value="プライズフィギュア" data-ja="プライズフィギュア" data-zh="景品模型"></option>
             <option value="ねんどろいど" data-ja="ねんどろいど" data-zh="黏土人"></option>
           </optgroup>
@@ -986,7 +972,7 @@
             <input class="fi" id="f-release" type="date" />
           </div>
           <div class="fg">
-            <label><span class="ja">到着状況</span><span class="zh">到貨狀態</span></label>
+            <label><span class="ja">到着状況</span><span class="zh">到貨状態</span></label>
             <select class="fi" id="f-arrival">
               <option value="到着済み" data-ja="到着済み (手元にあり)" data-zh="已到貨 (已在手邊)"></option>
               <option value="未到着" data-ja="未到着 (予約済 / 発送待ち)" data-zh="未到貨 (已預購 / 等待發貨)"></option>
@@ -1103,7 +1089,7 @@ function checkAuth(callback) {
 
 // Security Wrapper Functions
 function tryOpenForm(status) { checkAuth(() => openForm(status)); }
-function tryEditDetail() { checkAuth(() => openEditForm(detailId)); } // Fixed! Now edits proper ID
+function tryEditDetail() { checkAuth(() => openEditForm(detailId)); }
 function tryDeleteDetail() { checkAuth(() => { editId = detailId; deleteItem(); closeDetail(); }); }
 function tryMarkPurchased() { checkAuth(() => markAsPurchased()); }
 function tryImport() { checkAuth(() => triggerImport()); }
@@ -1124,21 +1110,50 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let items = [];
 let currentLang = localStorage.getItem('kuroo-lang') || 'ja';
 
-// --- Multiple Select UX Optimization ---
-// Allows clicking to toggle multiple select options without needing to hold Ctrl/Cmd
-document.addEventListener('DOMContentLoaded', () => {
-  const fSeries = document.getElementById('f-series');
-  if(fSeries) {
-    fSeries.addEventListener('mousedown', function(e) {
-      e.preventDefault();
-      const option = e.target;
-      if (option.tagName === 'OPTION') {
-        option.selected = !option.selected;
-        handleSeriesChange();
-      }
-    });
-  }
-});
+// NEW SERIES CHIP SYSTEM
+const seriesOptions = [
+  { val: '通常版', ja: '通常版', zh: '通常版' },
+  { val: 'バースデイ', ja: 'バースデイ', zh: '生日' },
+  { val: '原画', ja: '原画', zh: '原畫' },
+  { val: '箔押し', ja: '箔押し', zh: '燙金' },
+  { val: 'セット', ja: 'セット', zh: '套組' },
+  { val: 'くじ', ja: 'くじ (一番くじ)', zh: '抽賞 (一番賞)' },
+  { val: 'ジャンプフェスタ', ja: 'ジャンプフェスタ', zh: 'Jump Festa' },
+  { val: 'ハイキュー!!展', ja: 'ハイキュー!!展', zh: '排球少年！！展' },
+  { val: 'アニメイト', ja: 'アニメイト', zh: '安利美特(Animate)' },
+  { val: 'ジャンプショップ', ja: 'ジャンプショップ', zh: 'Jump Shop' },
+  { val: 'TOHO animation', ja: 'TOHO animation', zh: 'TOHO animation' },
+  { val: 'FAN PARK', ja: 'FAN PARK', zh: 'FAN PARK' },
+  { val: '極楽湯', ja: '極楽湯', zh: '極楽湯' },
+  { val: 'FLY HIGH!!', ja: 'FLY HIGH!!', zh: 'FLY HIGH!!' },
+  { val: 'その他', ja: 'その他', zh: 'その他' }
+];
+
+function renderSeriesChips() {
+   const container = document.getElementById('series-chip-container');
+   if(!container) return;
+   container.innerHTML = '';
+   const currentVals = document.getElementById('f-series').value.split(',').map(s=>s.trim()).filter(Boolean);
+   
+   seriesOptions.forEach(opt => {
+       const btn = document.createElement('button');
+       btn.type = 'button';
+       btn.className = 'tag-chip ' + (currentVals.includes(opt.val) ? 'active-chip' : '');
+       btn.textContent = currentLang === 'ja' ? opt.ja : opt.zh;
+       btn.onclick = () => {
+           let vals = document.getElementById('f-series').value.split(',').map(s=>s.trim()).filter(Boolean);
+           if(vals.includes(opt.val)) {
+               vals = vals.filter(v => v !== opt.val); // Remove if already active
+           } else {
+               vals.push(opt.val); // Add if not active
+           }
+           document.getElementById('f-series').value = vals.join(', ');
+           renderSeriesChips();
+           handleSeriesChange();
+       };
+       container.appendChild(btn);
+   });
+}
 
 /* ══ TRANSLATORS FOR SUPABASE COLUMNS ══ */
 function mapToDbRow(item) {
@@ -1278,7 +1293,6 @@ function runTypewriter() {
     typeTimeout = setTimeout(runTypewriter, 70); // Typing speed
   }
 
-  // Handle pauses between typing and deleting
   if (!isDeleting && charIdx === text.length) {
     isDeleting = true;
     typeTimeout = setTimeout(runTypewriter, 4500); // Wait 4.5 seconds so user can read it
@@ -1296,7 +1310,8 @@ function toggleLang() {
   updateDynamicText();
   render(); renderWish(); updateSidebar(); updateWishStats(); 
   
-  // Cleanly reset the typewriter when changing language
+  if(document.getElementById('ov-form').classList.contains('open')) renderSeriesChips(); // Re-translate chips if open
+  
   isDeleting = false;
   charIdx = 0;
   document.getElementById('hero-quote-text').textContent = '';
@@ -1309,8 +1324,7 @@ function toggleLang() {
    🎈 CONDITIONAL DROPDOWN LOGIC
 ══════════════════════════════ */
 function handleSeriesChange() {
-  const selectEl = document.getElementById('f-series');
-  const selectedValues = Array.from(selectEl.selectedOptions).map(opt => opt.value);
+  const selectedValues = document.getElementById('f-series').value.split(',').map(s=>s.trim());
   const isBday = selectedValues.includes('バースデイ');
   const bdayOptions = document.querySelectorAll('#f-type .bday-item');
   const typeSelect = document.getElementById('f-type');
@@ -1327,7 +1341,6 @@ function handleSeriesChange() {
     }
   });
 
-  // If a birthday item is selected but we change series away from Birthday, reset type safely
   if (!isBday && typeSelect.options[typeSelect.selectedIndex] && typeSelect.options[typeSelect.selectedIndex].classList.contains('bday-item')) {
     typeSelect.value = '缶バッジ';
   }
@@ -1338,7 +1351,6 @@ function handleSeriesChange() {
 function toggleCustomType() { 
     document.getElementById('f-type-custom').style.display = (document.getElementById('f-type').value === 'その他') ? 'block' : 'none'; 
 }
-function toggleCustomSeries() { }
 
 /* ══════════════════════════════
    DATA SYNC & MAGIC MIGRATION
@@ -1370,25 +1382,31 @@ async function initApp() {
       }
     }
   } catch (err) {
-    console.error("Supabase Sync Error:", err);
     toast('❌ データベース接続エラー。ローカルを使用します', '❌ 雲端連線失敗，使用本地備份', 'del');
     items = JSON.parse(localStorage.getItem('kuroo-v2') || '[]');
   }
 
   render(); renderWish(); updateSidebar(); updateWishStats();
-  runTypewriter(); // Start typewriter on page load
+  runTypewriter(); 
   if(document.getElementById('page-dash').classList.contains('active')) renderDashboard();
 }
 
 const uid  = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 
 async function saveToCloud(itemToSave, isDelete = false, idToDelete = null) {
-  localStorage.setItem('kuroo-v2', JSON.stringify(items));
   try {
+    // Try to save local backup, but don't crash if browser storage is full
+    try {
+      localStorage.setItem('kuroo-v2', JSON.stringify(items));
+    } catch (localErr) {
+      console.warn("Local storage full, relying on Supabase cloud.");
+    }
+
     if (isDelete && idToDelete) {
       await db.from('kuroo_items').delete().eq('id', idToDelete);
     } else if (itemToSave) {
-      await db.from('kuroo_items').upsert(mapToDbRow(itemToSave));
+      const { error } = await db.from('kuroo_items').upsert(mapToDbRow(itemToSave));
+      if (error) throw error;
     } else {
       for (const i of items) {
         await db.from('kuroo_items').upsert(mapToDbRow(i));
@@ -1396,6 +1414,7 @@ async function saveToCloud(itemToSave, isDelete = false, idToDelete = null) {
     }
   } catch (err) {
     console.error("Cloud Save Failed:", err);
+    throw err;
   }
 }
 
@@ -1417,7 +1436,7 @@ function switchPage(p, btn) {
   document.getElementById('page-' + p).classList.add('active');
   btn.classList.add('active');
   
-  if(p === 'col') runTypewriter(); // Run typewriter again if they come back to the home page
+  if(p === 'col') runTypewriter(); 
   
   if(p === 'dash') renderDashboard(); else { render(); renderWish(); updateSidebar(); updateWishStats(); }
 }
@@ -1876,10 +1895,10 @@ function openForm(status) {
   document.getElementById('form-title').innerHTML = '<span class="ja">アイテムを追加</span><span class="zh">新增物品</span>';
   document.getElementById('btn-del').style.display = 'none';
   ['f-name','f-price','f-budget','f-notes','f-shop','f-url','f-type-custom','f-series-custom', 'f-release'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-type').value = '缶バッジ'; document.getElementById('f-series').selectedIndex = -1;
+  document.getElementById('f-type').value = '缶バッジ'; document.getElementById('f-series').value = '';
   document.getElementById('f-cond').value = 'ほぼ新品'; document.getElementById('f-priority').value = '🔥 最優先';
   document.getElementById('f-arrival').value = '到着済み'; document.getElementById('file-input').value = '';
-  setQtyDisplay(1); setStatus(formSt); handleSeriesChange(); renderFormImgs();
+  setQtyDisplay(1); setStatus(formSt); renderSeriesChips(); handleSeriesChange(); renderFormImgs();
   document.getElementById('ov-form').classList.add('open');
 }
 
@@ -1898,11 +1917,8 @@ function openEditForm(id) {
   document.getElementById('f-release').value = item.release || '';
   document.getElementById('f-arrival').value = item.arrival || '到着済み';
   
-  const seriesValues = (item.series || '').split(', ').map(s => s.trim());
-  Array.from(document.getElementById('f-series').options).forEach(opt => {
-    opt.selected = seriesValues.includes(opt.value);
-  });
-  
+  document.getElementById('f-series').value = item.series || '';
+  renderSeriesChips();
   document.getElementById('f-series-custom').value = item.customSeries || '';
   handleSeriesChange(); // Initialize the dropdown visibilities BEFORE setting type
   
@@ -1997,33 +2013,63 @@ async function autofillFromUrl() {
   else toast('❌ サイトのセキュリティにより取得できませんでした', '❌ 網站安全阻擋，請手動輸入', 'del');
 }
 
-function compressImage(file, maxWidth, maxHeight, quality) {
+// --- NEW CLOUD UPLOAD COMPRESSION ---
+function compressImageToBlob(file, maxWidth, maxHeight, quality) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = function(event) {
       const img = new Image();
       img.onload = function() {
-        const canvas = document.createElement('canvas');
-        let width = img.width; let height = img.height;
-        if (width > height) { if (width > maxWidth) { height = Math.round((height *= maxWidth / width)); width = maxWidth; } } 
-        else { if (height > maxHeight) { width = Math.round((width *= maxHeight / height)); height = maxHeight; } }
-        canvas.width = width; canvas.height = height;
-        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        try {
+          const canvas = document.createElement('canvas');
+          let width = img.width; let height = img.height;
+          if (width > height) { if (width > maxWidth) { height = Math.round((height *= maxWidth / width)); width = maxWidth; } } 
+          else { if (height > maxHeight) { width = Math.round((width *= maxHeight / height)); height = maxHeight; } }
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
+        } catch(e) { reject(e); }
       };
-      img.onerror = reject; img.src = event.target.result;
+      img.onerror = () => reject(new Error('Image failed to load in canvas'));
+      img.src = event.target.result;
     };
-    reader.onerror = reject; reader.readAsDataURL(file);
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
   });
 }
 
-function handleImg(e) {
+async function handleImg(e) {
   const files = Array.from(e.target.files || e.dataTransfer.files);
   if (!files.length) return;
-  toast('⏳ 画像を圧縮中…', '⏳ 圖片壓縮中…', 'ok');
-  Promise.all(files.map(file => compressImage(file, 800, 800, 0.7)))
-    .then(results => { curImgs.push(...results); renderFormImgs(); })
-    .catch(err => { toast('❌ 画像の処理に失敗しました', '❌ 圖片處理失敗', 'del'); });
+  toast('⏳ 画像をアップロード中…', '⏳ 圖片上傳至雲端中…', 'ok');
+  document.getElementById('upload-hint-content').style.opacity = '0.5';
+  
+  try {
+    const uploadPromises = files.map(async (file) => {
+      const blob = await compressImageToBlob(file, 800, 800, 0.7);
+      const fileName = `item_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`;
+      
+      const { data, error } = await db.storage.from('images').upload(fileName, blob, {
+        contentType: 'image/jpeg'
+      });
+      
+      if (error) throw error;
+      
+      // Get the live public URL
+      const { data: publicUrlData } = db.storage.from('images').getPublicUrl(fileName);
+      return publicUrlData.publicUrl;
+    });
+
+    const results = await Promise.all(uploadPromises);
+    curImgs.push(...results); 
+    renderFormImgs(); 
+    document.getElementById('upload-hint-content').style.opacity = '1';
+    toast('✅ 画像のアップロードが完了しました', '✅ 圖片上傳完成', 'ok');
+  } catch (err) { 
+    console.error("Upload Error:", err);
+    toast('❌ 画像のアップロードに失敗しました', '❌ 圖片上傳失敗', 'del'); 
+    document.getElementById('upload-hint-content').style.opacity = '1';
+  }
 }
 
 function renderFormImgs() {
@@ -2048,7 +2094,7 @@ async function saveItem() {
   
   const existingItem = editId ? items.find(i => i.id === editId) : null;
   const itemTypeSelect = document.getElementById('f-type').value;
-  const seriesSelect = Array.from(document.getElementById('f-series').selectedOptions).map(opt => opt.value).join(', ');
+  const seriesSelect = document.getElementById('f-series').value; 
 
   const item = {
     id: editId || uid(), _ts: Date.now(), status: formSt,
@@ -2059,7 +2105,7 @@ async function saveItem() {
     customSeries: document.getElementById('f-series-custom').value.trim(),
     release: document.getElementById('f-release').value, arrival: document.getElementById('f-arrival').value,
     url: document.getElementById('f-url').value.trim(), price: document.getElementById('f-price').value || '',
-    date: existingItem ? existingItem.date : '', // Keep old date if it exists for backwards compatibility
+    date: existingItem ? existingItem.date : '',
     cond: document.getElementById('f-cond').value,
     shop: document.getElementById('f-shop').value.trim(), budget: document.getElementById('f-budget').value || '',
     priority: document.getElementById('f-priority').value, notes: document.getElementById('f-notes').value.trim(),
@@ -2074,7 +2120,6 @@ async function saveItem() {
       formSt === 'wishlist' ? toast('💜 ウィッシュリストに追加しました', '💜 已添加到願望清單', 'wish') : toast('✅ コレクションに追加しました', '✅ 已添加到收藏', 'ok'); 
     }
     
-    // Save securely to cloud
     await saveToCloud(item);
     
     closeForm(); updateSidebar(); render(); renderWish();
