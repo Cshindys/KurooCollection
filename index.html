@@ -1906,26 +1906,34 @@ function exportExcel() {
       };
 
   // 2️⃣ Convert all items to table rows
-  const rows = items.map(i => ({
+  const rows = items
+  .filter(i => i && i.name) // 过滤掉空项目
+  .map(i => ({
     [headers.name]: i.name || "",
-    [headers.type]: i.itemType || i.customType || "",
-    [headers.series]: i.series || i.customSeries || "",
-    [headers.status]:
-      i.status === "owned"
-        ? (currentLang === "ja" ? "所持中" : "已擁有")
-        : (currentLang === "ja" ? "ウィッシュ" : "願望"),
+    [headers.type]: t(i.itemType || i.customType || ""),
+[headers.series]: t(i.series || i.customSeries || ""),
+    i.status === "owned"
+    ? (i.wasWishlist
+        ? (currentLang === "ja" ? "所持中(旧ウィッシュ)" : "已擁有(原願望)")
+        : (currentLang === "ja" ? "所持中" : "已擁有"))
+    : (currentLang === "ja" ? "ウィッシュ" : "願望"),
     [headers.qty]: i.qty || 1,
     [headers.price]: i.price ? Number(i.price) : "",
     [headers.budget]: i.budget ? Number(i.budget) : "",
     [headers.shop]: i.shop || "",
-    [headers.cond]: i.cond || "",
+    [headers.cond]: t(i.cond || ""),
     [headers.notes]: i.notes || "",
     [headers.img]: (i.imgs && i.imgs.length > 0) ? i.imgs[0] : ""
   }));
 
   // 3️⃣ Build worksheet object
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = Object.keys(headers).map(() => ({ wch: 22 })); // column width auto-fit
+const colKeys = Object.keys(headers);
+ws['!cols'] = colKeys.map(key => {
+  if (key === 'notes') return { wch: 40 };
+  if (key === 'img') return { wch: 60 };
+  return { wch: 20 };
+});
 
   // 4️⃣ Append worksheet to workbook
   const wb = XLSX.utils.book_new();
