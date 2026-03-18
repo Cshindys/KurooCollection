@@ -7,6 +7,8 @@
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <style>
     @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@400;600;700&display=swap');
 
@@ -792,6 +794,12 @@
         <button class="btn btn-ghost" onclick="tryImport()" style="flex: 1; min-width: 200px; background: rgba(255,255,255,0.7);">
           ⬆️ <span class="ja">データを復元 (Import)</span><span class="zh">匯入還原 (Import)</span>
         </button>
+        <!-- 🆕 Excel export -->
+<button class="btn btn-primary" onclick="exportExcel()"
+        style="flex: 1; min-width: 200px; background: #1d8348;">
+  📗 <span class="ja">Excel出力</span>
+      <span class="zh">匯出 Excel</span>
+</button>
         <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
       </div>
     </div>
@@ -1864,6 +1872,88 @@ function exportData() {
   toast('💾 バックアップをダウンロードしました', '💾 已下載備份檔案', 'ok');
 }
 
+/* ══════════════════════════════
+   📗 EXPORT TO EXCEL (雙語) - by GPT‑5
+══════════════════════════════ */
+function exportExcel() {
+  // 1️⃣ Prepare column headers for both languages
+  const headers = currentLang === 'ja'
+    ? {
+        name: "商品名",
+        type: "タイプ",
+        series: "シリーズ",
+        status: "状態",
+        qty: "数量",
+        price: "価格(円)",
+        budget: "予算(円)",
+        shop: "購入先",
+        cond: "状態(コンディション)",
+        notes: "メモ",
+        img: "画像リンク"
+      }
+    : {
+        name: "商品名稱",
+        type: "類型",
+        series: "系列",
+        status: "狀態",
+        qty: "數量",
+        price: "價格(¥)",
+        budget: "預算(¥)",
+        shop: "購買管道",
+        cond: "物品狀況",
+        notes: "備註",
+        img: "圖片連結"
+      };
+
+  // 2️⃣ Convert all items to table rows
+  const rows = items.map(i => ({
+    [headers.name]: i.name || "",
+    [headers.type]: i.itemType || i.customType || "",
+    [headers.series]: i.series || i.customSeries || "",
+    [headers.status]:
+      i.status === "owned"
+        ? (currentLang === "ja" ? "所持中" : "已擁有")
+        : (currentLang === "ja" ? "ウィッシュ" : "願望"),
+    [headers.qty]: i.qty || 1,
+    [headers.price]: i.price ? Number(i.price) : "",
+    [headers.budget]: i.budget ? Number(i.budget) : "",
+    [headers.shop]: i.shop || "",
+    [headers.cond]: i.cond || "",
+    [headers.notes]: i.notes || "",
+    [headers.img]: (i.imgs && i.imgs.length > 0) ? i.imgs[0] : ""
+  }));
+
+  // 3️⃣ Build worksheet object
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = Object.keys(headers).map(() => ({ wch: 22 })); // column width auto-fit
+
+  // 4️⃣ Append worksheet to workbook
+  const wb = XLSX.utils.book_new();
+  const sheetName = currentLang === "ja" ? "黒尾コレクション" : "黑尾收藏";
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+  // 5️⃣ Generate filename in local language
+  const fileName =
+    (currentLang === "ja"
+      ? "黒尾コレクション_エクスポート_"
+      : "黑尾收藏_匯出_") +
+    new Date().toISOString().slice(0, 10) +
+    ".xlsx";
+
+  // 6️⃣ Save file
+  XLSX.writeFile(wb, fileName);
+
+  // 7️⃣ Give feedback via toast()
+  toast(
+    currentLang === "ja"
+      ? "📗 Excelファイルをダウンロードしました"
+      : "📗 已下載 Excel 檔案",
+    currentLang === "ja"
+      ? "📗 Excelファイルをダウンロードしました"
+      : "📗 已下載 Excel 檔案",
+    "ok"
+  );
+}
 function triggerImport() { document.getElementById('import-file').click(); }
 
 function importData(e) {
