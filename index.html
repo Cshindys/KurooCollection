@@ -534,6 +534,8 @@
       #ov-lightbox { align-items: center; justify-content: center; }
     }
   </style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body data-lang="ja">
 
@@ -776,6 +778,20 @@
     <div class="section-header" style="margin-bottom: 1.5rem;">
       <div class="section-title" style="font-size: 1.4rem;"><span class="ja">📊 ダッシュボード</span><span class="zh">📊 分析儀表板</span></div>
     </div>
+    <div class="dash-card">
+  <h3 class="cal-title">📈 <span class="ja">月別トレンド</span><span class="zh">每月趨勢</span></h3>
+  <canvas id="chart-monthly-trend" style="width:100%; max-height:200px;"></canvas>
+</div>
+
+<div class="dash-card">
+  <h3 class="cal-title">📊 <span class="ja">タイプ分布</span><span class="zh">類型分布</span></h3>
+  <canvas id="chart-type-distribution" style="width:100%; max-height:200px;"></canvas>
+</div>
+
+<div class="dash-card">
+  <h3 class="cal-title">📈 <span class="ja">価値の推移</span><span class="zh">價值成長趨勢</span></h3>
+  <canvas id="chart-value-growth" style="width:100%; max-height:200px;"></canvas>
+</div>
     
     <div class="dash-card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--warm1), var(--warm2)); border-color: var(--gold);">
       <div class="cal-header">
@@ -2224,6 +2240,167 @@ window.closeLightbox = function() { document.getElementById('ov-lightbox').class
 window.cycleLightbox = function(e, dir) { e.stopPropagation(); const item = items.find(i => i.id === lbId); if(!item || !item.imgs) return; lbIdx += dir; if(lbIdx < 0) lbIdx = item.imgs.length - 1; if(lbIdx >= item.imgs.length) lbIdx = 0; updateLightbox(); }
 function updateLightbox() { const item = items.find(i => i.id === lbId); document.getElementById('lb-img').src = item.imgs[lbIdx]; document.getElementById('lb-ind').textContent = `${lbIdx + 1} / ${item.imgs.length}`; }
 
+// 统计过去12个月月度新增数量和支出（购买价格）
+function getMonthlyTrends() {
+  const now = new Date();
+  let months = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ ym: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}`, label: `${d.getMonth() + 1}`});
+  }
+
+  const trendData = months.map(m => ({...m, count: 0, spend: 0}));
+
+  items.forEach(item => {
+    const dateStr = item.date || item.release || '';
+    if (!dateStr) return;
+    const ym = dateStr.slice(0,7);
+    const idx = trendData.findIndex(t => t.ym === ym);
+    if (idx === -1) return; // 预估仅统计近一年
+
+    if (item.status === 'owned') {
+      const qty = item.qty || 1;
+      trendData[idx].count += qty;
+      trendData[idx].spend += (Number(item.price) || 0) * qty;
+    }
+  });
+  return trendData;
+}
+
+// 统计类型分布（已拥有物品）
+function getTypeDistribution() {
+  const counts = {};
+  items.forEach(item => {
+    if (item.status !== 'owned') return;
+    let key = (item.itemType === 'その他' && item.customType) ? item.customType : item.itemType;
+    if (!key) key = 'Uncategorized';
+    counts[key] = (counts[key] || 0) + (item.qty || 1);
+  });
+  return counts;
+}
+
+// 计算按时间的收藏价值增长，总价累计
+function getValueGrowthData() {
+  const owned = items.filter(i => i.status === 'owned' && i.date && i.price);
+  owned.sort((a, b) => new Date(a.date) - new Date(b.date));
+  const data = [];
+  let cumulative = 0;
+  owned.forEach(i => {
+    cumulative += (Number(i.price) || 0) * (i.qty || 1);
+    data.push({ date: new Date(i.date), value: cumulative });
+  });
+  return data;
+}
+
+// Chart.js实例变量
+let chartMonthlyTrend, chartTypeDistribution, chartValueGrowth;
+
+function renderDashboard() {
+  // 正常现有渲染
+  renderCalendar();
+  renderChart();
+  // 排序等
+  // .... (你已有内容，保持不变)
+
+  renderMonthlyTrendChart();
+  renderTypeDistributionChart();
+  renderValueGrowthChart();
+}
+
+// 绘制月度趋势图
+function renderMonthlyTrendChart() {
+  const data = getMonthlyTrends();
+  const ctx = document.getElementById('chart-monthly-trend').getContext('2d');
+  if(chartMonthlyTrend) chartMonthlyTrend.destroy();
+
+  chartMonthlyTrend = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(d => d.label),
+      datasets: [
+        {
+          label: currentLang === 'ja' ? '追加数' : '新增數',
+          data: data.map(d => d.count),
+          backgroundColor: 'rgba(200,16,46,0.7)'
+        },
+        {
+          label: currentLang === 'ja' ? '支出額 (¥)' : '支出額 (¥)',
+          data: data.map(d => d.spend),
+          backgroundColor: 'rgba(184,134,11,0.7)'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero:true, title: { display: true, text: currentLang === 'ja' ? '数量 / 金額' : '數量 / 金額' } },
+        x: { title: { display:true, text: currentLang === 'ja' ? '月' : '月'} }
+      }
+    }
+  });
+}
+
+// 绘制类型分布饼图
+function renderTypeDistributionChart() {
+  const counts = getTypeDistribution();
+  const ctx = document.getElementById('chart-type-distribution').getContext('2d');
+  if(chartTypeDistribution) chartTypeDistribution.destroy();
+
+  const labels = Object.keys(counts);
+  const values = Object.values(counts);
+  const bgColors = labels.map((_, i) => `hsl(${i * 45 % 360}, 70%, 60%)`);
+
+  chartTypeDistribution = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: bgColors
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position:"bottom"} }
+    }
+  });
+}
+
+// 绘制价值增长折线图
+function renderValueGrowthChart() {
+  const data = getValueGrowthData();
+  const ctx = document.getElementById('chart-value-growth').getContext('2d');
+  if(chartValueGrowth) chartValueGrowth.destroy();
+
+  const labels = data.map(d => `${d.date.getFullYear()}/${d.date.getMonth()+1}`);
+  const values = data.map(d => d.value);
+
+  chartValueGrowth = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: currentLang === 'ja' ? '総価値 (¥)' : '總價值 (¥)',
+        data: values,
+        fill: true,
+        backgroundColor: 'rgba(200,16,46,0.25)',
+        borderColor: 'rgba(200,16,46,1)',
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      interaction: {
+        mode: 'nearest',
+        intersect: false
+      },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: currentLang === 'ja' ? '価値 (¥)' : '價值 (¥)' } },
+        x: { title: { display: true, text: currentLang === 'ja' ? '年月' : '年月' } }
+      }
+    }
+  });
+}
 // 🚀 START THE APP AND SYNC WITH SUPABASE
 initApp();
 </script>
